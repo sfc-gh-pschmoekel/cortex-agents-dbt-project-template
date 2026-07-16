@@ -1,25 +1,47 @@
 # TODO: Customize this agent specification for your use case.
 # This file is read by the create_agent and alter_agent macros.
 # See: https://docs.snowflake.com/en/sql-reference/sql/create-agent
+#
+# Writing effective agents -- keep the three layers separate (see README ->
+# "Writing effective agents"):
+#   - orchestration instructions = WHAT to do: tool routing, intent defaults,
+#     scope limits, multi-step workflow, and fallback behavior.
+#   - response instructions      = HOW the answer sounds and looks: tone,
+#     structure, tables vs charts, units, and data freshness.
+#   - tool descriptions          = what each tool covers and when (not) to use
+#     it -- the single biggest driver of routing accuracy.
+# Do NOT put SQL-generation rules (rounding, metric synonyms, default filters)
+# in the agent; those belong in the semantic view's AI_SQL_GENERATION clause.
 
 models:
   orchestration: auto     # 'auto' lets Snowflake pick the best model
 
 orchestration:
   budget:
-    seconds: 30           # Max time per request
+    seconds: 30           # Max time per request (raise for long multi-step runs, e.g. 300 = 5 min)
     tokens: 16000         # Max orchestration tokens per request
 
 instructions:
+  # Response = how the answer sounds and looks (NOT tool routing, NOT SQL rules).
+  # Cover: tone, lead with the direct answer, tables for multi-row / charts for
+  # trends, units and currency formatting, data freshness, and how to handle
+  # ambiguity or empty results.
   response: >
     TODO: Describe how the agent should respond.
-    Example: You are a data analyst assistant. Provide clear, data-driven
-    answers. Always cite specific numbers and dates in your responses.
+    Example: You are a data analyst assistant. Lead with the direct answer, then
+    supporting detail. Use a table for multi-row results and a chart for trends.
+    Include units and state the time period covered.
+  # Orchestration = planning and tool selection (NOT tone/formatting).
+  # Cover: which tool for which question type, intent defaults (e.g. default
+  # time window), scope limits (what to refuse), multi-step workflows, and
+  # fallback when a tool errors or returns no rows.
   orchestration: >
     TODO: Describe how the agent should route between tools.
     Example: For quantitative questions about orders and inventory, use the
     Analyst tool. For questions about business definitions or policies, use
-    the Search tool.
+    the Search tool. If no time period is given, default to the most recent
+    complete month. If a tool returns no rows, say so and suggest a related
+    question.
   sample_questions:
     - question: "TODO: Add a sample question for Cortex Analyst"
     - question: "TODO: Add a sample question for Cortex Search"
@@ -29,13 +51,17 @@ tools:
   - tool_spec:
       type: "cortex_analyst_text_to_sql"
       name: "Analyst"
-      # Tool descriptions are CRITICAL for routing accuracy.
-      # Be explicit about what this tool does AND does not do.
+      # Tool descriptions are the #1 driver of routing accuracy. Use the formula:
+      #   what it does + what data it accesses (grain, metrics, dimensions,
+      #   history, refresh) + when to use + when NOT to use + input guidance.
+      # Give each tool a distinct domain and a non-overlapping "when to use".
       description: >
         TODO: Describe what structured data this tool queries.
-        Example: Queries structured order, inventory, and product data to
-        answer questions about revenue, demand, and fulfillment metrics.
-        Do NOT use for questions about business definitions or policies.
+        Example: What it does: answers revenue, demand, and fulfillment
+        questions over structured order, inventory, and product data. Data: fact
+        and dimension tables at order grain, ~24 months of history. When to use:
+        quantitative sales/inventory questions. When NOT to use: business
+        definitions or policy questions (use the Search tool).
 
   # Uncomment to add a Cortex Search tool:
   # - tool_spec:

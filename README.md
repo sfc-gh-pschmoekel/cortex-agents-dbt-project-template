@@ -176,6 +176,28 @@ AS
 ALTER TASK daily_agent_evaluation RESUME;
 ```
 
+## Writing effective agents
+
+Agent quality comes mostly from three things. Keep them in **separate layers** — mixing them is the most common cause of poor answers:
+
+| Layer | Spec field | Put here | Keep out |
+|:------|:-----------|:---------|:---------|
+| **Orchestration** | `instructions.orchestration` | Tool routing, intent defaults (e.g. default time window), scope limits, multi-step workflows, fallback when a tool errors or returns nothing | Tone, formatting, SQL-generation rules |
+| **Response** | `instructions.response` | Tone, answer-first structure, tables vs. charts, units/currency, data freshness, how to handle ambiguity or empty results | Tool routing, SQL-generation rules |
+| **Tool description** | `tools[].tool_spec.description` | What the tool does, what data it accesses, when to use, when **not** to use, input guidance | — |
+
+**Tool descriptions are the single biggest driver of routing accuracy.** Write each one with this formula:
+
+> **what it does** + **what data it accesses** (grain, metrics, dimensions, history, refresh cadence) + **when to use** + **when NOT to use** + **input guidance**
+
+Give every tool a distinct domain and a non-overlapping "when to use", and always include an explicit "when NOT to use" so the agent doesn't overuse it. When you have multiple Analyst tools, the descriptions are what let the agent tell them apart.
+
+**Keep SQL-generation rules out of the agent.** Rounding, metric synonyms (e.g. "sales" = `net_sales`), and default filters belong in the semantic view's `AI_SQL_GENERATION` clause — not in agent instructions.
+
+> **Tip:** raise `orchestration.budget.seconds` for long multi-step runs (e.g. `300` for 5 minutes).
+
+References: [Best Practices to Building Cortex Agents](https://www.snowflake.com/en/developers/guides/best-practices-to-building-cortex-agents/) · [CREATE AGENT](https://docs.snowflake.com/en/sql-reference/sql/create-agent) · [Create and manage agents](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents-manage)
+
 ## Macros Reference
 
 | Macro | Purpose | Usage |
