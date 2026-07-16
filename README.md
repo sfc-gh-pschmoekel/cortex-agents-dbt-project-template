@@ -176,6 +176,54 @@ AS
 ALTER TASK daily_agent_evaluation RESUME;
 ```
 
+## Writing effective semantic views
+
+The semantic view is what makes Cortex Analyst accurate. High-leverage practices:
+
+- **Business names + curated synonyms.** Name objects the way users speak ("Revenue", not `AMT_TOT`); add a few real alternate phrasings per key table/dimension/metric. Avoid auto-generated synonym spam.
+- **Comments that teach.** At the view, table, and column level, state business meaning, **grain**, and any exclusions or caveats.
+- **Model KPIs as metrics.** Put canonical calculations in `METRICS` (e.g. `net_sales`, `avg_order_value`) so the model doesn't re-derive them. Use `FACTS` for reusable row-level expressions and `DIMENSIONS` for what users group/filter by.
+- **Sample values + enums.** Add `SAMPLE_VALUES` to categorical dimensions so the model maps phrasing to real filter values; add `IS_ENUM` only when the listed values are the *complete* set (`SAMPLE_VALUES` must appear before `IS_ENUM`).
+- **Verified queries.** Add `AI_VERIFIED_QUERIES` for common and failure-prone questions, phrased the way users actually ask them — one of the strongest accuracy levers.
+- **Custom instructions.** Use `AI_SQL_GENERATION` for recurring defaults / rounding / value decoding and `AI_QUESTION_CATEGORIZATION` for out-of-scope handling and clarifications. Keep these in the semantic view, not in the agent.
+- **Explicit keys & relationships.** Declare `PRIMARY KEY` / `UNIQUE` and named `RELATIONSHIPS`. If two tables have multiple join paths, disambiguate a metric with `USING (relationship_name)`, and prefer a clean star shape to avoid multi-path ambiguity errors.
+- **Keep scope tight.** Start with ~3-5 tables and roughly **50-100 columns total** — smaller, focused views outperform "do-it-all" models because Cortex Analyst has a limited context window. Split by domain when needed.
+
+**Clause order is enforced** — author the DDL in this sequence:
+
+```
+TABLES -> RELATIONSHIPS -> FACTS -> DIMENSIONS -> METRICS -> COMMENT
+      -> AI_SQL_GENERATION -> AI_QUESTION_CATEGORIZATION -> AI_VERIFIED_QUERIES
+```
+
+`COMMENT` must come **before** the `AI_*` clauses, and `AI_VERIFIED_QUERIES` comes last (placing `COMMENT` after the `AI_*` clauses raises `unexpected 'COMMENT'`).
+
+References: [Best practices for semantic views](https://docs.snowflake.com/en/user-guide/views-semantic/best-practices-dev) · [Semantic View Editor](https://docs.snowflake.com/en/user-guide/views-semantic/editor) · [CREATE SEMANTIC VIEW](https://docs.snowflake.com/en/sql-reference/sql/create-semantic-view) · [Using SQL to manage semantic views](https://docs.snowflake.com/en/user-guide/views-semantic/sql)
+
+## Writing effective agents
+
+Agent quality comes mostly from three things. Keep them in **separate layers** — mixing them is the most common cause of poor answers:
+
+| Layer | Spec field | Put here | Keep out |
+|:------|:-----------|:---------|:---------|
+| **Orchestration** | `instructions.orchestration` | Tool routing, intent defaults (e.g. default time window), scope limits, multi-step workflows, fallback when a tool errors or returns nothing | Tone, formatting, SQL-generation rules |
+| **Response** | `instructions.response` | Tone, answer-first structure, tables vs. charts, units/currency, data freshness, how to handle ambiguity or empty results | Tool routing, SQL-generation rules |
+| **Tool description** | `tools[].tool_spec.description` | What the tool does, what data it accesses, when to use, when **not** to use, input guidance | — |
+
+**Tool descriptions are the single biggest driver of routing accuracy.** Write each one with this formula:
+
+> **what it does** + **what data it accesses** (grain, metrics, dimensions, history, refresh cadence) + **when to use** + **when NOT to use** + **input guidance**
+
+Give every tool a distinct domain and a non-overlapping "when to use", and always include an explicit "when NOT to use" so the agent doesn't overuse it. When you have multiple Analyst tools, the descriptions are what let the agent tell them apart.
+
+**Keep SQL-generation rules out of the agent.** Rounding, metric synonyms (e.g. "sales" = `net_sales`), and default filters belong in the semantic view's `AI_SQL_GENERATION` clause — not in agent instructions.
+
+> **Tip:** raise `orchestration.budget.seconds` for long multi-step runs (e.g. `300` for 5 minutes).
+
+> **Required:** every `cortex_analyst_text_to_sql` tool needs an `execution_environment` (the warehouse its generated SQL runs in) under `tool_resources`. Use `execution_environment: { type: warehouse, warehouse: <name> }` — not a top-level `warehouse` key.
+
+References: [Best Practices to Building Cortex Agents](https://www.snowflake.com/en/developers/guides/best-practices-to-building-cortex-agents/) · [CREATE AGENT](https://docs.snowflake.com/en/sql-reference/sql/create-agent) · [Create and manage agents](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents-manage)
+
 ## Macros Reference
 
 | Macro | Purpose | Usage |
