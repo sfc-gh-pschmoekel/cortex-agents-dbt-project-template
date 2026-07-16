@@ -8,8 +8,28 @@
 -- CREATE OR REPLACE SEMANTIC VIEW — full SQL API coverage, no package
 -- upgrade needed for new Snowflake features.
 --
--- Uncomment and customize the blocks below. Use {{ source() }} and {{ ref() }}
--- to reference tables so dbt handles fully-qualified name resolution.
+-- Use {{ source() }} and {{ ref() }} to reference tables so dbt handles
+-- fully-qualified name resolution.
+--
+-- CLAUSE ORDER MATTERS. Author them in this sequence:
+--   TABLES -> RELATIONSHIPS -> FACTS -> DIMENSIONS -> METRICS -> COMMENT
+--   -> AI_SQL_GENERATION -> AI_QUESTION_CATEGORIZATION -> AI_VERIFIED_QUERIES
+-- COMMENT must come BEFORE the AI_* clauses; verified queries come last.
+--
+-- Best practices for Cortex Analyst accuracy (see README ->
+-- "Writing effective semantic views"):
+--   * Business names + a few hand-curated synonyms; skip auto-synonym spam.
+--   * Comments should state business meaning, grain, and any exclusions.
+--   * Model KPIs as METRICS (not raw columns); FACTS are row-level building
+--     blocks; DIMENSIONS are what users group/filter by.
+--   * Add SAMPLE_VALUES on categorical dimensions (+ IS_ENUM only when the
+--     listed values are the COMPLETE set) to map phrasing to real values.
+--   * Add AI_VERIFIED_QUERIES for common and failure-prone questions.
+--   * Keep SQL rules (defaults, rounding, decoding) in AI_SQL_GENERATION here,
+--     NOT in the agent.
+--   * Keep scope tight: ~3-5 tables to start, roughly 50-100 columns total.
+--   * Declare PRIMARY KEY / UNIQUE and explicit RELATIONSHIPS; if two tables
+--     have multiple join paths, disambiguate a metric with USING (rel_name).
 -- =============================================================================
 
 TABLES (
@@ -30,6 +50,8 @@ TABLES (
 
 -- RELATIONSHIPS (
 --   -- TODO: Define foreign key relationships between tables.
+--   -- Prefer a clean star shape; if two tables have multiple join paths,
+--   -- disambiguate the affected METRIC with USING (relationship_name).
 --   -- Example:
 --   -- orders_to_products AS
 --   --   orders (product_id) REFERENCES products
@@ -56,6 +78,11 @@ TABLES (
 --   -- products.product_name AS product_name
 --   --   COMMENT = 'Product display name'
 --   --   WITH SYNONYMS = ('item name', 'sku name'),
+--   --
+--   -- orders.status AS status
+--   --   COMMENT = 'Order status'
+--   --   SAMPLE_VALUES ('Placed', 'Fulfilled', 'Cancelled')  -- maps phrasing to real values
+--   --   IS_ENUM,                                            -- only if this is the COMPLETE set
 --   --
 --   -- orders.order_date AS order_date
 --   --   COMMENT = 'Date the order was placed'

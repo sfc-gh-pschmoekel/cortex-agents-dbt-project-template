@@ -77,8 +77,14 @@ tool_resources:
     # This will resolve to {target.database}.{target.schema}.SV_EXAMPLE
     # after you build and deploy.
     semantic_view: "DEV_DB.CORTEX_AGENTS.SV_EXAMPLE"
+    # REQUIRED for cortex_analyst_text_to_sql tools: the warehouse the generated
+    # SQL runs in. Use execution_environment -- NOT a top-level "warehouse" key.
+    execution_environment:
+      type: warehouse
+      warehouse: ANALYTICS_WH   # TODO: replace with your warehouse
+      # query_timeout: 60       # optional, seconds
 
-  # Uncomment to configure the Search tool:
+  # Uncomment to configure the Search tool (no execution_environment needed):
   # Search:
   #   name: "DEV_DB.CORTEX_AGENTS.MY_SEARCH_SERVICE"
   #   max_results: "5"
