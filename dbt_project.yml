@@ -5,7 +5,7 @@ config-version: 2
 profile: cortex_agent_lifecycle
 
 model-paths: ["models"]
-macro-paths: ["macros"]
+macro-paths: ["macros", "agents"]   # agents/ holds per-agent deploy wrapper macros
 seed-paths: ["seeds"]
 test-paths: ["tests"]
 analysis-paths: ["analyses"]
