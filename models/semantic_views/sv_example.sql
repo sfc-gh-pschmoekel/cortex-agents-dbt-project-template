@@ -5,11 +5,12 @@
 -- =============================================================================
 -- TODO: Replace this skeleton with your actual semantic view definition.
 -- The dbt_semantic_view package passes your SQL directly to Snowflake's
--- CREATE OR REPLACE SEMANTIC VIEW — full SQL API coverage, no package
+-- CREATE OR REPLACE SEMANTIC VIEW: full SQL API coverage, no package
 -- upgrade needed for new Snowflake features.
 --
--- Use {{ source() }} and {{ ref() }} to reference tables so dbt handles
--- fully-qualified name resolution.
+-- Use the source() and ref() functions to reference tables so dbt handles
+-- fully-qualified name resolution. (Written without the Jinja braces here
+-- because dbt renders Jinja even inside SQL comments.)
 --
 -- CLAUSE ORDER MATTERS. Author them in this sequence:
 --   TABLES -> RELATIONSHIPS -> FACTS -> DIMENSIONS -> METRICS -> COMMENT
@@ -34,7 +35,8 @@
 
 TABLES (
   -- TODO: Define your logical tables with primary keys.
-  -- Example:
+  -- Example (wrapped in raw so dbt does not render the Jinja in these comments):
+  {% raw %}
   -- orders AS {{ source('raw', 'orders') }}
   --   PRIMARY KEY (order_id)
   --   COMMENT = 'Customer orders with fulfillment status',
@@ -42,6 +44,7 @@ TABLES (
   -- products AS {{ ref('stg_products') }}
   --   PRIMARY KEY (product_id)
   --   COMMENT = 'Product catalog with inventory data'
+  {% endraw %}
 
   placeholder AS {{ source('raw', 'placeholder_table') }}
     PRIMARY KEY (id)
