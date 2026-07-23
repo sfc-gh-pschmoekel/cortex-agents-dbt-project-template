@@ -1,0 +1,78 @@
+name: CD -- Deploy on Merge
+run-name: PR from ${{ github.actor }} merged -- deploying to prod
+
+# Renamed with .example so it does not auto-run on a public fork.
+# Remove the .example extension to activate.
+#
+# REQUIRES Snowflake CLI >= 3.21 (env.yml flags --default-env / --env are only
+# supported from 3.21). On older CLIs, deploy/run from Snowsight Workspaces
+# instead. Pin the runner's snowflake-cli accordingly.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  dbt-deploy:
+    name: "Deploy to Production"
+    runs-on: ubuntu-latest
+    environment: prod  # must match your OIDC service user's SUBJECT
+    env:
+      SNOWFLAKE_CLI_FEATURES_ENABLE_DBT: true
+      SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+      # SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}      # only if not using OIDC
+      # SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PAT }}   # only if not using OIDC
+      SNOWFLAKE_DATABASE: ${{ vars.SNOWFLAKE_DATABASE }}
+      SNOWFLAKE_SCHEMA: ${{ vars.SNOWFLAKE_SCHEMA }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Snowflake CLI
+        uses: snowflakedb/snowflake-actions@v3
+        with:
+          use-oidc: true
+
+      - name: Verify connection
+        run: snow connection test -x
+
+      # Deploy the production dbt project object
+      - name: Deploy production dbt project
+        run: |
+          snow dbt deploy cortex_agents_lifecycle \
+            --source . \
+            --default-target prod \
+            --default-env prod \
+            --dbt-version 1.11.11 \
+            --external-access-integration dbt_ext_access \
+            -x
+
+      # Build staging models + semantic views + evaluations first, so the
+      # semantic view exists before the agent points at it.
+      # NOTE: --env must come BEFORE the (qualified) project name.
+      - name: Build models with prod environment
+        run: |
+          snow dbt execute -x --env prod \
+            ${{ vars.SNOWFLAKE_DATABASE }}.${{ vars.SNOWFLAKE_SCHEMA }}.cortex_agents_lifecycle build
+
+      # Deploy the agent. deploy_example_agent defines the spec inline and calls
+      # create_agent, which substitutes the environment tokens with the prod
+      # target values. No --args needed for create.
+      # TODO: change deploy_example_agent to your agent's wrapper macro.
+      - name: Deploy Cortex Agent
+        run: |
+          snow dbt execute -x --env prod \
+            ${{ vars.SNOWFLAKE_DATABASE }}.${{ vars.SNOWFLAKE_SCHEMA }}.cortex_agents_lifecycle \
+            run-operation deploy_example_agent
+
+      - name: List deployed projects
+        run: snow dbt list -x
+
+      # Optional: uncomment to set up scheduled execution via Snowflake Tasks
+      # - name: Apply scheduling
+      #   run: snow sql -f schedules.sql -x

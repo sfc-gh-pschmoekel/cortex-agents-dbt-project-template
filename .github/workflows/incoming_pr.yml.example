@@ -1,0 +1,61 @@
+name: CI -- Test on PR
+run-name: PR opened by ${{ github.actor }}
+
+# Renamed with .example so it does not auto-run on a public fork.
+# Remove the .example extension to activate.
+#
+# REQUIRES Snowflake CLI >= 3.21 (env.yml flags --default-env / --env are only
+# supported from 3.21). On older CLIs, deploy/run from Snowsight Workspaces
+# instead. Pin the runner's snowflake-cli accordingly.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [main]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  dbt-test:
+    name: "Build & Test (dev environment)"
+    runs-on: ubuntu-latest
+    environment: prod  # must match your OIDC service user's SUBJECT
+    env:
+      SNOWFLAKE_CLI_FEATURES_ENABLE_DBT: true
+      SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+      # SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}      # only if not using OIDC
+      # SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PAT }}   # only if not using OIDC
+      SNOWFLAKE_DATABASE: ${{ vars.SNOWFLAKE_DATABASE }}
+      SNOWFLAKE_SCHEMA: ${{ vars.SNOWFLAKE_SCHEMA }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Snowflake CLI
+        uses: snowflakedb/snowflake-actions@v3
+        with:
+          use-oidc: true
+
+      - name: Verify connection
+        run: snow connection test -x
+
+      # Deploy a tester project object (does not overwrite prod)
+      - name: Deploy tester dbt project
+        run: |
+          snow dbt deploy tester_cortex_agents_lifecycle \
+            --source . \
+            --dbt-version 1.11.11 \
+            --default-env dev \
+            -x
+
+      # Build staging models + semantic views + evaluations in DAG order.
+      # NOTE: --env must come BEFORE the project name; options after the name
+      # are passed to dbt Core (which has no --env). The name is qualified so
+      # EXECUTE DBT has a database context.
+      - name: Build & test with dev environment
+        run: |
+          snow dbt execute -x --env dev \
+            ${{ vars.SNOWFLAKE_DATABASE }}.${{ vars.SNOWFLAKE_SCHEMA }}.tester_cortex_agents_lifecycle build

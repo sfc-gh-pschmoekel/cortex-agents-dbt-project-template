@@ -1,19 +1,16 @@
-{% macro alter_agent(agent_name, spec_file=none) %}
+{% macro alter_agent(agent_name, spec) %}
 
   {%- set db = target.database -%}
   {%- set schema = target.schema -%}
 
-  {%- if spec_file is none -%}
-    {%- set spec_file = 'agents/' ~ agent_name ~ '.yml' -%}
-  {%- endif -%}
-
-  {%- set spec_content = load_file_contents(spec_file) -%}
-
-  {%- if spec_content is none -%}
-    {{ exceptions.raise_compiler_error(
-      "Agent spec file not found: " ~ spec_file
-    ) }}
-  {%- endif -%}
+  {# Zero-downtime update of an existing agent's live version. The spec is
+     passed in as text by the per-agent wrapper macro (see
+     agents/example_agent.sql); dbt Projects on Snowflake has no runtime
+     file read. #}
+  {%- set spec_content = spec
+        | replace('<<DATABASE>>', db)
+        | replace('<<SCHEMA>>', schema)
+        | replace('<<WAREHOUSE>>', target.warehouse) -%}
 
   {% set sql %}
     ALTER AGENT {{ db }}.{{ schema }}.{{ agent_name }}
