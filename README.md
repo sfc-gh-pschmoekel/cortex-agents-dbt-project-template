@@ -1,8 +1,10 @@
 # Cortex Agent Development Lifecycle with dbt Projects on Snowflake
 
-A template dbt project for managing the full Cortex Agent lifecycle as code, covering semantic views, agent configurations, evaluations, and scheduling, all running natively inside Snowflake.
+Think of this as a starter kit for building Cortex Agents the way you'd build any other piece of software: in version control, promoted across dev, staging, and prod, tested with evaluations, and shipped through CI/CD. Everything (semantic views, agent specs, evaluations, and scheduling) lives as code in one dbt project and runs natively inside Snowflake. Fork it, point it at your data, and you've got a repeatable lifecycle instead of a pile of one-off UI clicks.
 
 ## Prerequisites
+
+Before you start, here's what you'll need:
 
 | Requirement | Details |
 |:---|:---|
@@ -14,7 +16,7 @@ A template dbt project for managing the full Cortex Agent lifecycle as code, cov
 
 ### External Access Integration Setup
 
-Run this once (requires ACCOUNTADMIN) to allow `dbt deps` to download packages:
+You only need to do this once, and it takes ACCOUNTADMIN. It lets `dbt deps` reach out and download packages:
 
 ```sql
 CREATE OR REPLACE NETWORK RULE dbt_network_rule
@@ -29,28 +31,21 @@ CREATE OR REPLACE EXTERNAL ACCESS INTEGRATION dbt_ext_access
 
 ## Environment variables (env.yml)
 
-This template uses [SQL environment variables](https://docs.snowflake.com/en/user-guide/data-engineering/dbt-projects-on-snowflake-environment-variables) so one set of code runs against every environment. Snowflake resolves `env.yml` at `EXECUTE DBT PROJECT` time, evaluates any SQL values, and injects them as environment variables that `profiles.yml` reads with `env_var()`.
+One codebase, every environment: that's the goal. This template leans on [SQL environment variables](https://docs.snowflake.com/en/user-guide/data-engineering/dbt-projects-on-snowflake-environment-variables) so you never hardcode a database or schema name. When you run `EXECUTE DBT PROJECT`, Snowflake reads `env.yml`, evaluates any SQL inside it, and injects the results as environment variables that `profiles.yml` picks up with `env_var()`.
 
-```
-┌───────────────────────────────────────────────────────────────┐
-│  EXECUTE DBT PROJECT ... ENVIRONMENT = 'dev'                   │
-└──────────────────────────┬────────────────────────────────────┘
-                           ▼
-│  env.yml picks 'dev', evaluates {{ select CURRENT_USER() }}   │
-│  → injects DBT_DATABASE / DBT_SCHEMA / DBT_WAREHOUSE / DBT_ROLE │
-                           ▼
-│  profiles.yml reads env_var() → target.database / schema / ... │
-                           ▼
-│  Everything dbt builds lands in that target; the agent macro   │
-│  substitutes the same values into the agent spec               │
-```
+Here's the flow when you run it:
 
-**What is environment-aware:**
+1. **`EXECUTE DBT PROJECT ... ENVIRONMENT = 'dev'`** kicks things off.
+2. **`env.yml`** picks the `dev` environment and evaluates any SQL inside it (like `{{ select CURRENT_USER() }}`), then injects `DBT_DATABASE`, `DBT_SCHEMA`, `DBT_WAREHOUSE`, and `DBT_ROLE`.
+3. **`profiles.yml`** reads those with `env_var()` and maps them onto `target.database`, `target.schema`, and the rest.
+4. Everything dbt builds lands in that target, and the agent macro substitutes the same values into the agent spec.
 
-- **Semantic views, staging models, and evaluations** build into `{DBT_DATABASE}.{DBT_SCHEMA}` automatically, because they inherit the dbt target. No tokens needed.
+Here's what adjusts automatically:
+
+- **Semantic views, staging models, and evaluations** build into `{DBT_DATABASE}.{DBT_SCHEMA}` on their own, because they inherit the dbt target. No tokens needed.
 - **The eval stage and file format** (`create_eval_stage`, `run_evaluation`) read `target.database`/`target.schema`, so they follow the environment too.
-- **The agent spec** lives in a wrapper macro (`agents/*.sql`) because dbt Projects on Snowflake has no runtime file read. The wrapper passes the spec to `create_agent`/`alter_agent`, which substitute the `<<DATABASE>>`, `<<SCHEMA>>`, and `<<WAREHOUSE>>` tokens with the active target values.
-- **Raw sources** (`models/sources.yml`) are intentionally *not* env-driven: every developer reads the same raw input tables.
+- **The agent spec** lives in a wrapper macro (`agents/*.sql`) because dbt Projects on Snowflake can't read a file at runtime. The wrapper passes the spec to `create_agent`/`alter_agent`, which swap the `<<DATABASE>>`, `<<SCHEMA>>`, and `<<WAREHOUSE>>` tokens for the active target values.
+- **Raw sources** (`models/sources.yml`) are deliberately *not* env-driven: every developer reads the same raw input tables.
 
 **Environments** (`env.yml`), `default_environment: dev`:
 
@@ -60,9 +55,9 @@ This template uses [SQL environment variables](https://docs.snowflake.com/en/use
 | `staging` | `STAGING_DB` | `CORTEX_AGENTS` | `SYSADMIN` |
 | `prod` | `PROD_DB` | `CORTEX_AGENTS` | `SYSADMIN` |
 
-Per-developer schemas in `dev` mean each engineer's agents, semantic views, and evaluations are isolated: nobody overwrites anyone else while iterating.
+Per-developer schemas in `dev` mean each engineer's agents, semantic views, and evaluations stay isolated, so nobody overwrites anyone else while iterating.
 
-**Rules to remember:**
+A few rules to keep in mind:
 
 | Rule | Example |
 |:---|:---|
@@ -71,70 +66,43 @@ Per-developer schemas in `dev` mean each engineer's agents, semantic views, and 
 | SQL values need double quotes | `"{{ select CURRENT_USER() }}"` |
 | `env.yml` lives next to `dbt_project.yml` | project root |
 
-**Precedence** (highest wins): `ENV_VARS=(...)` on `EXECUTE` (or `--env-vars` on the CLI) > shell env vars (CLI only, `--use-shell-env-vars`) > the `env.yml` selected environment.
+Precedence, highest wins: `ENV_VARS=(...)` on `EXECUTE` (or `--env-vars` on the CLI) > shell env vars (CLI only, `--use-shell-env-vars`) > the `env.yml` selected environment.
 
-> **Note:** the `env_var()` calls in `profiles.yml` have no fallback defaults, so a run fails fast if a variable is missing (for example, running outside Snowflake without `env.yml` resolution) instead of silently using a wrong database. Always run through `EXECUTE DBT PROJECT` / `snow dbt execute` with an environment selected.
+> **Note:** the `env_var()` calls in `profiles.yml` have no fallback defaults, so a run fails fast if a variable is missing (for example, running outside Snowflake without `env.yml` resolution) instead of quietly using the wrong database. Always run through `EXECUTE DBT PROJECT` / `snow dbt execute` with an environment selected.
 
-## Quick Start: Snowflake Workspace (from Git)
+## Getting started
 
-1. **Fork this repository** to your GitHub account
+There are two ways to get this into a Snowflake Workspace. Pick whichever fits: connect your Git fork (recommended, since you get version history and PR review), or just upload the folder.
 
-2. **Create a Workspace** in Snowsight:
-   - Navigate to **Projects > Workspaces**
-   - Select **Create Workspace > From Git repository**
-   - Enter your forked repo URL
-   - Select your API integration (see [connecting Git to Snowflake](https://docs.snowflake.com/en/developer-guide/git/git-setting-up))
+> **Prefer to work locally?** Fork the repo, clone it, and open it in [Cortex Code Desktop](https://docs.snowflake.com/en/user-guide/cortex-code/cortex-code-desktop). You get an AI agent that lives right next to your editor and terminal, wired into your Snowflake connection, so you can edit models, run `snow dbt execute`, and ship the agent without leaving the app. Push your changes and they flow into the Workspace through the same Git connection from Option A.
 
-3. **Edit `env.yml`**: replace `DEV_DB` / `STAGING_DB` / `PROD_DB` and `ANALYTICS_WH` with your databases and warehouse
+### Option A: From a Git repo (recommended)
 
-4. **Install dependencies**: Select **Deps** from the command bar:
-   - Click the dropdown arrow next to the execute button
-   - Enter your External Access Integration name (e.g., `dbt_ext_access`)
-   - Click **Deps**
+1. **Fork this repository** to your GitHub account.
+2. In Snowsight, head to **Projects > Workspaces** and choose **Create Workspace > From Git repository**.
+3. Enter your forked repo URL and pick your API integration (see [connecting Git to Snowflake](https://docs.snowflake.com/en/developer-guide/git/git-setting-up)).
 
-5. **Compile** to verify: Select **Compile** from the command bar
+### Option B: Upload the folder (no Git)
 
-6. **Select your environment** (dev/staging/prod) from the environment selector, then **Build** from the command bar to materialize models
+1. **Download this template directory** to your local machine.
+2. In Snowsight, head to **Projects > Workspaces** and choose **Create Workspace > Blank Workspace**, then name it (e.g. `cortex_agent_lifecycle`).
+3. Click **+ Add new > Upload folder** and select the downloaded template directory.
 
-7. **Deploy** as a DBT PROJECT object:
-   - Click **Connect > Deploy dbt Project**
-   - Select your target database and schema
-   - Enter a name (e.g., `CORTEX_LIFECYCLE`)
-   - Click **Deploy**
+> **Heads up:** without Git you won't have version history or PR-based review. You can connect a Git repository later in the Workspace settings if you change your mind.
 
-## Quick Start: Upload to Workspace (No Git Required)
+### Then, once it's in your Workspace
 
-1. **Download this template directory** to your local machine
+Both paths land here. From the command bar:
 
-2. **Create a blank Workspace** in Snowsight:
-   - Navigate to **Projects > Workspaces**
-   - Select **Create Workspace > Blank Workspace**
-   - Name it (e.g., `cortex_agent_lifecycle`)
+1. **Edit `env.yml`**: swap `DEV_DB` / `STAGING_DB` / `PROD_DB` and `ANALYTICS_WH` for your own databases and warehouse.
+2. **Install dependencies**: click the dropdown arrow next to the execute button, enter your External Access Integration name (e.g. `dbt_ext_access`), and click **Deps**.
+3. **Compile** to make sure everything resolves.
+4. **Pick your environment** (dev/staging/prod) in the environment selector, then **Build** to materialize the models.
+5. **Deploy** it as a DBT PROJECT object: **Connect > Deploy dbt Project**, choose your target database and schema, give it a name (e.g. `CORTEX_LIFECYCLE`), and click **Deploy**.
 
-3. **Upload the template**: Click **+ Add new > Upload folder** and select the downloaded template directory
+## Working from the Snowflake CLI
 
-4. **Edit `env.yml`**: replace `DEV_DB` / `STAGING_DB` / `PROD_DB` and `ANALYTICS_WH` with your databases and warehouse
-
-5. **Install dependencies**: Select **Deps** from the command bar:
-   - Click the dropdown arrow next to the execute button
-   - Enter your External Access Integration name (e.g., `dbt_ext_access`)
-   - Click **Deps**
-
-6. **Compile** to verify: Select **Compile** from the command bar
-
-7. **Select your environment** (dev/staging/prod) from the environment selector, then **Build** from the command bar to materialize models
-
-8. **Deploy** as a DBT PROJECT object:
-   - Click **Connect > Deploy dbt Project**
-   - Select your target database and schema
-   - Enter a name (e.g., `CORTEX_LIFECYCLE`)
-   - Click **Deploy**
-
-> **Note**: Without Git you won't have version history or PR-based review. You can connect a Git repository later via the Workspace settings to enable version control.
-
-## Quick Start: Snowflake CLI
-
-> **Requires Snowflake CLI >= 3.21.** The `env.yml` flags (`--default-env`, `--env`) are only supported from 3.21. On older CLIs, use Snowsight Workspaces (Quick Starts above), which resolves `env.yml` natively. Check with `snow --version`.
+> **Requires Snowflake CLI >= 3.21.** The `env.yml` flags (`--default-env`, `--env`) only landed in 3.21. On older CLIs, use the Snowsight Workspace flow above, which resolves `env.yml` natively. Check yours with `snow --version`.
 
 ```bash
 # Deploy the project object (--default-env sets the env used for compile + runs)
@@ -147,18 +115,19 @@ snow dbt deploy cortex_lifecycle --source . \
 # name so EXECUTE DBT has a database context.
 snow dbt execute --env dev DB.SCHEMA.cortex_lifecycle build
 
-# Deploy the agent -- the wrapper macro defines the spec and calls create_agent
+# Deploy the agent (the wrapper macro defines the spec and calls create_agent)
 snow dbt execute --env prod DB.SCHEMA.cortex_lifecycle run-operation deploy_example_agent
 ```
 
-Inside a Snowsight Workspace you run dbt directly (the environment selector
-picks the `env.yml` environment):
+Inside a Snowsight Workspace you run dbt directly (the environment selector picks the `env.yml` environment):
 
 ```bash
 dbt run-operation deploy_example_agent
 ```
 
 ## Project Structure
+
+Here's the lay of the land:
 
 ```
 ├── dbt_project.yml              # Project configuration
@@ -197,7 +166,9 @@ dbt run-operation deploy_example_agent
 
 ## Workflow
 
-> **Running a guided build session?** See [`WORKING-SESSION.md`](WORKING-SESSION.md): a phase-driven runbook you (or Cortex Code) can follow to build the agent end-to-end.
+> **Running a guided build session?** Check out [`WORKING-SESSION.md`](WORKING-SESSION.md): a phase-driven runbook you (or Cortex Code) can follow to build the agent end-to-end.
+
+The big picture looks like this:
 
 ```
 1. Define Sources ──> 2. Build Staging ──> 3. Create Semantic View ──> 4. Deploy Agent
@@ -218,6 +189,8 @@ dbt run-operation deploy_example_agent
 | **6** | Schedule | Create a Snowflake Task (see below) |
 
 ### Scheduling with Snowflake Tasks
+
+Want it to run on its own? Wrap the same commands in Tasks:
 
 ```sql
 -- Schedule daily builds
@@ -243,7 +216,7 @@ ALTER TASK daily_agent_evaluation RESUME;
 
 ## CI/CD with GitHub Actions
 
-Two workflow files live in `.github/workflows/`, kept with a `.example` extension so they do not auto-run on a public fork. Remove the extension to activate.
+Two workflow files live in `.github/workflows/`, kept with a `.example` extension so they don't auto-run on a public fork. Drop the extension to turn them on.
 
 | File | Trigger | What it does |
 |:---|:---|:---|
@@ -266,7 +239,7 @@ CREATE USER IF NOT EXISTS github_actions_service_user
 
 -- SYSADMIN is enough for routine object creation (semantic views, agents,
 -- stages). ACCOUNTADMIN is only needed once, by a human, for the External
--- Access Integration above -- do not grant it to the CI/CD service user.
+-- Access Integration above. Don't grant it to the CI/CD service user.
 GRANT ROLE SYSADMIN TO USER github_actions_service_user;
 ```
 
@@ -278,13 +251,13 @@ GRANT ROLE SYSADMIN TO USER github_actions_service_user;
 | Variable | `SNOWFLAKE_DATABASE` | Database for the dbt project object |
 | Variable | `SNOWFLAKE_SCHEMA` | Schema for the dbt project object |
 
-3. Create a GitHub environment named `prod` in repo **Settings → Environments** (must match the OIDC `SUBJECT`).
+3. Create a GitHub environment named `prod` in repo **Settings → Environments** (it has to match the OIDC `SUBJECT`).
 
-Open a PR and the CI workflow runs automatically.
+Open a PR and the CI workflow kicks off automatically.
 
 ## Writing effective semantic views
 
-The semantic view is what makes Cortex Analyst accurate. High-leverage practices:
+The semantic view is what makes Cortex Analyst accurate, so it's worth the effort. The high-leverage practices:
 
 - **Business names + curated synonyms.** Name objects the way users speak ("Revenue", not `AMT_TOT`); add a few real alternate phrasings per key table/dimension/metric. Avoid auto-generated synonym spam.
 - **Comments that teach.** At the view, table, and column level, state business meaning, **grain**, and any exclusions or caveats.
@@ -295,20 +268,20 @@ The semantic view is what makes Cortex Analyst accurate. High-leverage practices
 - **Explicit keys & relationships.** Declare `PRIMARY KEY` / `UNIQUE` and named `RELATIONSHIPS`. If two tables have multiple join paths, disambiguate a metric with `USING (relationship_name)`, and prefer a clean star shape to avoid multi-path ambiguity errors.
 - **Keep scope tight.** Start with ~3-5 tables and roughly **50-100 columns total**: smaller, focused views outperform "do-it-all" models because Cortex Analyst has a limited context window. Split by domain when needed.
 
-**Clause order is enforced**: author the DDL in this sequence:
+**Clause order is enforced**, so author the DDL in this sequence:
 
 ```
 TABLES -> RELATIONSHIPS -> FACTS -> DIMENSIONS -> METRICS -> COMMENT
       -> AI_SQL_GENERATION -> AI_QUESTION_CATEGORIZATION -> AI_VERIFIED_QUERIES
 ```
 
-`COMMENT` must come **before** the `AI_*` clauses, and `AI_VERIFIED_QUERIES` comes last (placing `COMMENT` after the `AI_*` clauses raises `unexpected 'COMMENT'`).
+`COMMENT` must come **before** the `AI_*` clauses, and `AI_VERIFIED_QUERIES` comes last (putting `COMMENT` after the `AI_*` clauses raises `unexpected 'COMMENT'`).
 
 References: [Best practices for semantic views](https://docs.snowflake.com/en/user-guide/views-semantic/best-practices-dev) · [Semantic View Editor](https://docs.snowflake.com/en/user-guide/views-semantic/editor) · [CREATE SEMANTIC VIEW](https://docs.snowflake.com/en/sql-reference/sql/create-semantic-view) · [Using SQL to manage semantic views](https://docs.snowflake.com/en/user-guide/views-semantic/sql)
 
 ## Writing effective agents
 
-Agent quality comes mostly from three things. Keep them in **separate layers**: mixing them is the most common cause of poor answers:
+Agent quality comes mostly from three things, and the trick is to keep them in **separate layers**. Mixing them is the most common cause of poor answers:
 
 | Layer | Spec field | Put here | Keep out |
 |:------|:-----------|:---------|:---------|
@@ -322,7 +295,7 @@ Agent quality comes mostly from three things. Keep them in **separate layers**: 
 
 Give every tool a distinct domain and a non-overlapping "when to use", and always include an explicit "when NOT to use" so the agent doesn't overuse it. When you have multiple Analyst tools, the descriptions are what let the agent tell them apart.
 
-**Keep SQL-generation rules out of the agent.** Rounding, metric synonyms (e.g. "sales" = `net_sales`), and default filters belong in the semantic view's `AI_SQL_GENERATION` clause: not in agent instructions.
+**Keep SQL-generation rules out of the agent.** Rounding, metric synonyms (e.g. "sales" = `net_sales`), and default filters belong in the semantic view's `AI_SQL_GENERATION` clause, not in agent instructions.
 
 > **Tip:** raise `orchestration.budget.seconds` for long multi-step runs (e.g. `300` for 5 minutes).
 
@@ -331,6 +304,8 @@ Give every tool a distinct domain and a non-overlapping "when to use", and alway
 References: [Best Practices to Building Cortex Agents](https://www.snowflake.com/en/developers/guides/best-practices-to-building-cortex-agents/) · [CREATE AGENT](https://docs.snowflake.com/en/sql-reference/sql/create-agent) · [Create and manage agents](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents-manage)
 
 ## Macros Reference
+
+The macros that do the heavy lifting:
 
 | Macro | Purpose | Usage |
 |:------|:--------|:------|
