@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="snowflake-source" content="cortex-agent-authored" />
+<title>Exhibit A, 3: Clause Order</title>
+<script type="application/json" id="snowflake-report-metadata">
+{
+  "generated": "2026-07-28",
+  "intent": "Exhibit A section 3 of 3: the enforced semantic view clause order, the COMMENT-before-AI_* gotcha, and an annotated skeleton.",
+  "sources": [ { "type": "file", "path": "_github/cortex-agents-dbt-project-template/README.md" } ]
+}
+</script>
+<style>
+:root {
+  --sf-blue: #29B5E8; --sf-blue-deep: #11567F; --sf-blue-darker: #0A3D5A; --sf-cyan: #71D3DC; --sf-blue-pale: #E8F6FC;
+  --gavel: #B07A2A; --gavel-deep: #8A5E1F; --gavel-pale: #FBF4E6;
+  --bg: #FFFFFF; --bg-alt: #F7F9FB; --text: #1E1E1E; --text-muted: #5A6872; --border: #E5EAF0; --border-strong: #CFD7E0;
+  --success: #2E7D32; --warning: #E65100; --radius: 6px; --radius-lg: 10px;
+  --shadow-sm: 0 1px 2px rgba(17,86,127,0.06); --shadow-md: 0 4px 12px rgba(17,86,127,0.08);
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "SF Mono", Menlo, Consolas, "Courier New", monospace;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--font-sans); font-size: 16px; line-height: 1.6; color: var(--text); background: var(--bg-alt); -webkit-font-smoothing: antialiased; }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+.site-header { background: linear-gradient(135deg, var(--sf-blue-deep) 0%, var(--sf-blue-darker) 100%); color: white; padding: 2rem 0; border-bottom: 3px solid var(--gavel); }
+.brand { display: flex; align-items: center; gap: 0.5rem; font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; }
+.brand-mark { font-size: 1.4rem; }
+.brand-text .divider { color: var(--sf-cyan); margin: 0 0.5rem; font-weight: 300; }
+.meta { display: flex; flex-wrap: wrap; gap: 0.25rem 2rem; font-size: 0.875rem; color: rgba(255,255,255,0.85); }
+.meta-label { color: var(--sf-cyan); font-weight: 600; margin-right: 0.5rem; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; }
+.topnav { background: var(--bg); border-bottom: 1px solid var(--border); padding: 0.6rem 0; font-size: 0.85rem; }
+.topnav a { color: var(--sf-blue-deep); text-decoration: none; font-weight: 600; }
+.topnav a:hover { text-decoration: underline; }
+.topnav .sep { color: var(--border-strong); margin: 0 0.55rem; }
+.topnav .cur { color: var(--text-muted); font-weight: 700; }
+.tabbar { background: var(--bg); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 20; box-shadow: var(--shadow-sm); }
+.tabbar .container { display: flex; flex-wrap: wrap; gap: 0.15rem; }
+.tab { display: inline-block; padding: 0.7rem 0.9rem; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-decoration: none; border-bottom: 3px solid transparent; white-space: nowrap; }
+.tab:hover { color: var(--sf-blue-deep); background: var(--bg-alt); }
+.tab.active { color: var(--gavel-deep); border-bottom-color: var(--gavel); }
+main { padding: 2.25rem 0 4rem; }
+.eyebrow { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gavel); margin-bottom: 0.5rem; }
+h1 { font-size: 2.1rem; font-weight: 700; color: var(--sf-blue-deep); margin: 0 0 0.5rem; letter-spacing: -0.02em; }
+h3 { font-size: 1.05rem; color: var(--sf-blue-deep); margin: 1.5rem 0 0.4rem; }
+.lead { font-size: 1.12rem; color: var(--text-muted); margin: 0 0 1rem; max-width: 70ch; }
+p { margin: 0.75rem 0; }
+.muted { color: var(--text-muted); }
+code { font-family: var(--font-mono); font-size: 0.85em; background: var(--sf-blue-pale); color: var(--sf-blue-deep); padding: 0.1em 0.4em; border-radius: 4px; }
+pre { background: #0A3D5A; color: #E8F6FC; border-radius: var(--radius); padding: 1rem 1.15rem; overflow-x: auto; font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.55; margin: 0.75rem 0; }
+pre code { background: none; color: inherit; padding: 0; }
+pre .cmt { color: #71D3DC; }
+pre .kw { color: #FFD27F; font-weight: 600; }
+.warn { border-left: 4px solid var(--warning); background: #FFF7ED; padding: 0.7rem 1rem; border-radius: var(--radius); margin: 1rem 0; font-size: 0.9rem; color: #7A3E00; }
+.warn strong { color: var(--warning); }
+.clause-flow { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin: 1rem 0; }
+.clause { background: var(--sf-blue-pale); border: 1px solid var(--sf-blue); color: var(--sf-blue-deep); border-radius: 20px; padding: 0.3rem 0.8rem; font-size: 0.82rem; font-weight: 600; font-family: var(--font-mono); }
+.clause.ai { background: var(--gavel-pale); border-color: var(--gavel); color: var(--gavel-deep); }
+.clause-arrow { color: var(--border-strong); font-weight: 700; }
+.pager { display: flex; justify-content: space-between; gap: 1rem; margin: 3rem 0 0; }
+.pager a { flex: 1 1 0; text-decoration: none; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 0.9rem 1.1rem; color: var(--sf-blue-deep); background: var(--bg); box-shadow: var(--shadow-sm); transition: transform 0.15s ease, box-shadow 0.15s ease; }
+.pager a:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.pager .spacer { flex: 1 1 0; }
+.pager .nxt { text-align: right; }
+.pager .dir { display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); font-weight: 700; margin-bottom: 0.15rem; }
+.pager .ttl { font-weight: 700; }
+.visual-ph { border: 2px dashed var(--border-strong); border-radius: var(--radius-lg); background: repeating-linear-gradient(45deg, #FBFDFE, #FBFDFE 10px, #F3F8FB 10px, #F3F8FB 20px); padding: 1.5rem; text-align: center; color: var(--text-muted); margin: 1.5rem 0; }
+.visual-ph .vp-tag { display: inline-block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--sf-blue-deep); background: var(--sf-blue-pale); border: 1px solid var(--sf-blue); border-radius: 4px; padding: 0.15em 0.6em; margin-bottom: 0.5rem; }
+.site-footer { background: var(--sf-blue-darker); color: rgba(255,255,255,0.75); padding: 1.25rem 0; margin-top: 3rem; font-size: 0.875rem; text-align: center; }
+.site-footer strong { color: var(--sf-cyan); }
+.site-footer a { color: var(--sf-cyan); }
+@media (max-width: 700px) { h1 { font-size: 1.7rem; } .container { padding: 0 1rem; } .pager { flex-direction: column; } .pager .spacer { display: none; } }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <div class="brand">
+      <span class="brand-mark">&#10052;</span>
+      <span class="brand-text">Snowflake <span class="divider">|</span> Cortex Agents &amp; dbt</span>
+    </div>
+    <div class="meta">
+      <div class="meta-row"><span class="meta-label">Talk</span> Beyond a Reasonable dbt</div>
+      <div class="meta-row"><span class="meta-label">Section</span> Exhibit A / Clause Order</div>
+    </div>
+  </div>
+</header>
+
+<nav class="topnav">
+  <div class="container">
+    <a href="index.html">The Case</a>
+    <span class="sep">|</span>
+    <a href="walkthrough.html">The Proceedings</a>
+    <span class="sep">|</span>
+    <span class="cur">Exhibit A</span>
+    <span class="sep">|</span>
+    <a href="agents.html">Exhibit B</a>
+    <span class="sep">|</span>
+    <a href="evaluations.html">Exhibit C</a>
+  </div>
+</nav>
+
+<nav class="tabbar">
+  <div class="container">
+    <a class="tab" href="exa-practices.html">1 &middot; Practices</a>
+    <a class="tab" href="exa-ai-clauses.html">2 &middot; AI Clauses</a>
+    <a class="tab active" href="exa-clause-order.html">3 &middot; Clause Order</a>
+  </div>
+</nav>
+
+<main class="container">
+  <div class="eyebrow">Exhibit A &middot; Section 3 of 3</div>
+  <h1>Clause Order Is Enforced</h1>
+  <p class="lead">Author the DDL in exactly this sequence. <code>COMMENT</code> must come <strong>before</strong> the <code>AI_*</code> clauses, and <code>AI_VERIFIED_QUERIES</code> comes last.</p>
+
+  <div class="clause-flow">
+    <span class="clause">TABLES</span><span class="clause-arrow">&rarr;</span>
+    <span class="clause">RELATIONSHIPS</span><span class="clause-arrow">&rarr;</span>
+    <span class="clause">FACTS</span><span class="clause-arrow">&rarr;</span>
+    <span class="clause">DIMENSIONS</span><span class="clause-arrow">&rarr;</span>
+    <span class="clause">METRICS</span><span class="clause-arrow">&rarr;</span>
+    <span class="clause">COMMENT</span><span class="clause-arrow">&rarr;</span>
+    <span class="clause ai">AI_SQL_GENERATION</span><span class="clause-arrow">&rarr;</span>
+    <span class="clause ai">AI_QUESTION_CATEGORIZATION</span><span class="clause-arrow">&rarr;</span>
+    <span class="clause ai">AI_VERIFIED_QUERIES</span>
+  </div>
+  <div class="warn"><strong>Gotcha:</strong> placing <code>COMMENT</code> after the <code>AI_*</code> clauses raises <code>unexpected 'COMMENT'</code>. Order is not a suggestion.</div>
+
+  <h3>Annotated skeleton</h3>
+  <pre><code>{{ config(materialized=<span class="cmt">'semantic_view'</span>) }}
+
+<span class="kw">CREATE OR REPLACE SEMANTIC VIEW</span> sv_sales
+  <span class="kw">TABLES</span> (
+    orders <span class="kw">PRIMARY KEY</span> (order_id) <span class="cmt">-- one row per order</span>
+  )
+  <span class="kw">RELATIONSHIPS</span> ( <span class="cmt">-- FK joins between tables (clean star) </span> )
+  <span class="kw">FACTS</span>      ( orders.line_total <span class="kw">AS</span> quantity * unit_price )
+  <span class="kw">DIMENSIONS</span> ( orders.region <span class="kw">WITH SAMPLE_VALUES</span> ('WEST','EAST') )
+  <span class="kw">METRICS</span>    ( orders.net_sales <span class="kw">AS</span> SUM(line_total) )
+  <span class="kw">COMMENT</span> = <span class="cmt">'Order-grain sales. Excludes cancelled orders.'</span>
+  <span class="kw">WITH AI_SQL_GENERATION</span>   <span class="cmt">-- how to write SQL (defaults, rounding)</span>
+  <span class="kw">WITH AI_QUESTION_CATEGORIZATION</span> <span class="cmt">-- routing / reject / clarify</span>
+  <span class="kw">WITH AI_VERIFIED_QUERIES</span>  <span class="cmt">-- confirmed Q&amp;A pairs (last)</span> ;</code></pre>
+  <p class="muted">Materialize it with <code>dbt build --select sv_&lt;name&gt;</code>, then confirm a sample <code>SELECT ... FROM SEMANTIC_VIEW(sv_&lt;name&gt; ...)</code> returns rows. Built into <code>{DBT_DATABASE}.{DBT_SCHEMA}</code> automatically, since it inherits the dbt target.</p>
+
+  <div class="visual-ph">
+    <div class="vp-tag">Visual</div>
+    <div>Drop a screenshot of the Semantic View editor in Snowsight, or a before/after of a question answered correctly once verified queries were added.</div>
+  </div>
+
+  <nav class="pager">
+    <a class="prv" href="exa-ai-clauses.html"><span class="dir">&larr; Previous</span><span class="ttl">2 &middot; AI Clauses</span></a>
+    <a class="nxt" href="agents.html"><span class="dir">Next exhibit &rarr;</span><span class="ttl">Exhibit B &middot; The Agent</span></a>
+  </nav>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>Beyond a Reasonable dbt &middot; <strong>Snowflake | Cortex Agents &amp; dbt</strong> &middot; <a href="semantic-views.html">Exhibit A overview</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

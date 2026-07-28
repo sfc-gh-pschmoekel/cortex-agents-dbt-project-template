@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="snowflake-source" content="cortex-agent-authored" />
+<title>The Proceedings, 5: Ship &amp; Automate</title>
+<script type="application/json" id="snowflake-report-metadata">
+{
+  "generated": "2026-07-27",
+  "intent": "Walkthrough section 5 of 5 for 'Beyond a Reasonable dbt': closing arguments (promote, ship, automate), the Snowflake CLI path, and the troubleshooting table (objections).",
+  "sources": [
+    { "type": "file", "path": "_github/cortex-agents-dbt-project-template/WORKING-SESSION.md" },
+    { "type": "file", "path": "_github/cortex-agents-dbt-project-template/README.md" }
+  ]
+}
+</script>
+<style>
+:root {
+  --sf-blue: #29B5E8;
+  --sf-blue-deep: #11567F;
+  --sf-blue-darker: #0A3D5A;
+  --sf-cyan: #71D3DC;
+  --sf-blue-pale: #E8F6FC;
+  --gavel: #B07A2A;
+  --gavel-deep: #8A5E1F;
+  --gavel-pale: #FBF4E6;
+  --bg: #FFFFFF;
+  --bg-alt: #F7F9FB;
+  --text: #1E1E1E;
+  --text-muted: #5A6872;
+  --border: #E5EAF0;
+  --border-strong: #CFD7E0;
+  --success: #2E7D32;
+  --warning: #E65100;
+  --radius: 6px;
+  --radius-lg: 10px;
+  --shadow-sm: 0 1px 2px rgba(17, 86, 127, 0.06);
+  --shadow-md: 0 4px 12px rgba(17, 86, 127, 0.08);
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "SF Mono", Menlo, Consolas, "Courier New", monospace;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--font-sans); font-size: 16px; line-height: 1.6; color: var(--text); background: var(--bg-alt); -webkit-font-smoothing: antialiased; }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+.site-header { background: linear-gradient(135deg, var(--sf-blue-deep) 0%, var(--sf-blue-darker) 100%); color: white; padding: 2rem 0; border-bottom: 3px solid var(--sf-blue); }
+.brand { display: flex; align-items: center; gap: 0.5rem; font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; }
+.brand-mark { font-size: 1.4rem; }
+.brand-text .divider { color: var(--sf-cyan); margin: 0 0.5rem; font-weight: 300; }
+.meta { display: flex; flex-wrap: wrap; gap: 0.25rem 2rem; font-size: 0.875rem; color: rgba(255,255,255,0.85); }
+.meta-label { color: var(--sf-cyan); font-weight: 600; margin-right: 0.5rem; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; }
+.topnav { background: var(--bg); border-bottom: 1px solid var(--border); padding: 0.6rem 0; font-size: 0.85rem; }
+.topnav a { color: var(--sf-blue-deep); text-decoration: none; font-weight: 600; }
+.topnav a:hover { text-decoration: underline; }
+.topnav .sep { color: var(--border-strong); margin: 0 0.55rem; }
+.topnav .cur { color: var(--text-muted); font-weight: 700; }
+.tabbar { background: var(--bg); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 20; box-shadow: var(--shadow-sm); }
+.tabbar .container { display: flex; flex-wrap: wrap; gap: 0.15rem; }
+.tab { display: inline-block; padding: 0.7rem 0.9rem; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-decoration: none; border-bottom: 3px solid transparent; white-space: nowrap; }
+.tab:hover { color: var(--sf-blue-deep); background: var(--bg-alt); }
+.tab.active { color: var(--sf-blue-deep); border-bottom-color: var(--sf-blue); }
+main { padding: 2.25rem 0 4rem; }
+.eyebrow { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gavel); margin-bottom: 0.5rem; }
+h1 { font-size: 2.15rem; font-weight: 700; color: var(--sf-blue-deep); margin: 0 0 0.5rem; letter-spacing: -0.02em; }
+h2 { font-size: 1.3rem; font-weight: 600; color: var(--sf-blue-deep); margin: 2.75rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--border); scroll-margin-top: 4rem; }
+h3 { font-size: 1.05rem; color: var(--sf-blue-deep); margin: 1.5rem 0 0.5rem; }
+.lead { font-size: 1.12rem; color: var(--text-muted); margin: 0 0 1rem; max-width: 70ch; }
+p { margin: 0.75rem 0; }
+.muted { color: var(--text-muted); }
+a.inline { color: var(--sf-blue-deep); font-weight: 600; }
+code { font-family: var(--font-mono); font-size: 0.85em; background: var(--sf-blue-pale); color: var(--sf-blue-deep); padding: 0.1em 0.4em; border-radius: 4px; }
+pre { background: #0A3D5A; color: #E8F6FC; border-radius: var(--radius); padding: 1rem 1.15rem; overflow-x: auto; font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.5; margin: 0.75rem 0; }
+pre code { background: none; color: inherit; padding: 0; }
+pre .cmt { color: #71D3DC; }
+table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: 0.92rem; background: var(--bg); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm); }
+th, td { border: 1px solid var(--border); padding: 0.55rem 0.75rem; text-align: left; vertical-align: top; }
+th { background: var(--sf-blue-pale); color: var(--sf-blue-deep); font-weight: 700; }
+tbody tr:nth-child(even) { background: var(--bg-alt); }
+.note { border-left: 4px solid var(--sf-blue); background: var(--sf-blue-pale); padding: 0.7rem 1rem; border-radius: var(--radius); margin: 1rem 0; font-size: 0.9rem; color: var(--sf-blue-darker); }
+.note strong { color: var(--sf-blue-deep); }
+.pager { display: flex; justify-content: space-between; gap: 1rem; margin: 3rem 0 0; }
+.pager a { flex: 1 1 0; text-decoration: none; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 0.9rem 1.1rem; color: var(--sf-blue-deep); background: var(--bg); box-shadow: var(--shadow-sm); transition: transform 0.15s ease, box-shadow 0.15s ease; }
+.pager a:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.pager .spacer { flex: 1 1 0; }
+.pager .nxt { text-align: right; }
+.pager .dir { display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); font-weight: 700; margin-bottom: 0.15rem; }
+.pager .ttl { font-weight: 700; }
+.site-footer { background: var(--sf-blue-darker); color: rgba(255,255,255,0.75); padding: 1.25rem 0; margin-top: 3rem; font-size: 0.875rem; text-align: center; }
+.site-footer strong { color: var(--sf-cyan); }
+.site-footer a { color: var(--sf-cyan); }
+@media (max-width: 700px) { h1 { font-size: 1.7rem; } .container { padding: 0 1rem; } .pager { flex-direction: column; } .pager .spacer { display: none; } }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <div class="brand">
+      <span class="brand-mark">&#10052;</span>
+      <span class="brand-text">Snowflake <span class="divider">|</span> Cortex Agents &amp; dbt</span>
+    </div>
+    <div class="meta">
+      <div class="meta-row"><span class="meta-label">Talk</span> Beyond a Reasonable dbt</div>
+      <div class="meta-row"><span class="meta-label">Section</span> The Proceedings / Ship &amp; Automate</div>
+    </div>
+  </div>
+</header>
+
+<nav class="topnav">
+  <div class="container">
+    <a href="index.html">The Case</a>
+    <span class="sep">|</span>
+    <span class="cur">The Proceedings</span>
+    <span class="sep">|</span>
+    <a href="semantic-views.html">Exhibit A</a>
+    <span class="sep">|</span>
+    <a href="agents.html">Exhibit B</a>
+    <span class="sep">|</span>
+    <a href="evaluations.html">Exhibit C</a>
+  </div>
+</nav>
+
+<nav class="tabbar">
+  <div class="container">
+    <a class="tab" href="wt-setup.html">1 &middot; Setup</a>
+    <a class="tab" href="wt-semantic-view.html">2 &middot; Semantic View</a>
+    <a class="tab" href="wt-agent.html">3 &middot; The Agent</a>
+    <a class="tab" href="wt-evaluation.html">4 &middot; Evaluation</a>
+    <a class="tab active" href="wt-ship.html">5 &middot; Ship &amp; Automate</a>
+  </div>
+</nav>
+
+<main class="container">
+  <div class="eyebrow">Step 5 of 5</div>
+  <h1>Ship &amp; Automate</h1>
+  <p class="lead">With a verdict in hand, promote the same code to production, ship the agent where users work, and let CI/CD and scheduled tasks keep it fresh.</p>
+
+  <!-- CLOSING -->
+  <h2 id="closing">Closing Arguments: ship &amp; automate</h2>
+  <p>With a verdict in hand (target <strong>&ge;95%</strong> answer correctness), promote, ship, and automate: same code, prod target.</p>
+  <table>
+    <thead><tr><th>Move</th><th>How</th></tr></thead>
+    <tbody>
+      <tr><td>Iterate live</td><td><code>dbt run-operation deploy_&lt;agent&gt; --args '{alter: true}'</code> (zero-downtime)</td></tr>
+      <tr><td>Promote to prod</td><td>Re-run Phases 1, 4, 5 with <code>--env prod</code> (CLI) or the Workspace environment selector</td></tr>
+      <tr><td>Ship to users</td><td>Snowflake Intelligence, Microsoft Teams, the Cortex Agent REST API, or MCP</td></tr>
+      <tr><td>Automate (CI/CD)</td><td>GitHub Actions: PR builds on dev, merge deploys to prod (the <code>.github/workflows/*.example</code> files)</td></tr>
+      <tr><td>Schedule</td><td>Snowflake Tasks running <code>EXECUTE DBT PROJECT ... ARGS='build --target prod'</code></td></tr>
+    </tbody>
+  </table>
+  <pre><code><span class="cmt">-- schedule daily builds + evaluation as Snowflake Tasks</span>
+CREATE OR REPLACE TASK daily_cortex_build
+  WAREHOUSE = ANALYTICS_WH
+  SCHEDULE = 'USING CRON 0 6 * * * America/Denver'
+AS EXECUTE DBT PROJECT DEV_DB.CORTEX_AGENTS.CORTEX_LIFECYCLE ARGS='build --target prod';
+ALTER TASK daily_cortex_build RESUME;</code></pre>
+
+  <!-- CLI PATH -->
+  <h2 id="cli">The CLI path (snow &ge; 3.21)</h2>
+  <p>Inside a Snowsight Workspace you run dbt directly and pick the environment in the run panel. On the CLI, deploy once then execute, with two rules learned the hard way:</p>
+  <pre><code><span class="cmt"># deploy the project object (--default-env sets the compile/run env)</span>
+snow dbt deploy cortex_lifecycle --source . \
+  --default-env dev --external-access-integration dbt_ext_access --force
+
+<span class="cmt"># build with an environment. --env MUST come BEFORE the project name;</span>
+<span class="cmt"># use the fully-qualified name so EXECUTE DBT has a database context.</span>
+snow dbt execute --env dev DB.SCHEMA.cortex_lifecycle build
+
+<span class="cmt"># deploy the agent -- the wrapper macro carries the spec, no --args</span>
+snow dbt execute --env prod DB.SCHEMA.cortex_lifecycle run-operation deploy_&lt;agent&gt;</code></pre>
+
+  <!-- OBJECTIONS -->
+  <h2 id="objections">Objections (troubleshooting)</h2>
+  <table>
+    <thead><tr><th>Symptom</th><th>Ruling</th></tr></thead>
+    <tbody>
+      <tr><td>Eval errors: <em>"dataset already exists"</em></td><td>Remove the <code>dataset:</code> block from the config after the first successful run</td></tr>
+      <tr><td><code>ground_truth</code> rejected / wrong type</td><td>Must be VARIANT: keep <code>PARSE_JSON(...)</code> in <code>eval_dataset.sql</code>; do not switch to <code>OBJECT_CONSTRUCT</code></td></tr>
+      <tr><td>Agent can't find the semantic view</td><td>Spec must reference <code>&lt;&lt;DATABASE&gt;&gt;.&lt;&lt;SCHEMA&gt;&gt;.SV_&lt;NAME&gt;</code> (tokens substituted at deploy)</td></tr>
+      <tr><td>Poor tool routing</td><td>Tighten each <code>tools[].description</code>: what it's for AND what it's not for</td></tr>
+      <tr><td><code>dbt deps</code> can't reach the hub</td><td>Provide the External Access Integration name</td></tr>
+      <tr><td><code>snow dbt</code> rejects <code>--env</code> or mangles <code>--args</code></td><td>CLI older than 3.21; upgrade, or run from a Snowsight Workspace</td></tr>
+      <tr><td><em>"No such option '--env'"</em></td><td><code>--env</code> was placed after the project name; it must come before</td></tr>
+      <tr><td><em>"session does not have a current database"</em></td><td>Use the fully-qualified project name <code>&lt;db&gt;.&lt;schema&gt;.&lt;project&gt;</code></td></tr>
+      <tr><td>Macro fails on <code>load_file_contents</code> / <code>{% include %}</code></td><td>No runtime file read; specs live in the <code>deploy_&lt;agent&gt;</code> wrapper macro, not a raw <code>.yml</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note"><strong>That's the lifecycle.</strong> Business questions became a governed, evaluated, shipped agent, all built by one dbt project. Head back to <a class="inline" href="index.html">The Case</a> for the summary, or revisit any step from the tabs above.</div>
+
+  <nav class="pager">
+    <a class="prv" href="wt-evaluation.html"><span class="dir">&larr; Previous</span><span class="ttl">4 &middot; Evaluation</span></a>
+    <a class="nxt" href="walkthrough.html"><span class="dir">Back to &uarr;</span><span class="ttl">Proceedings overview</span></a>
+  </nav>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>Beyond a Reasonable dbt &middot; <strong>Snowflake | Cortex Agents &amp; dbt</strong> &middot; <a href="walkthrough.html">Proceedings overview</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

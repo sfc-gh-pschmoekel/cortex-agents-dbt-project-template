@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="snowflake-source" content="cortex-agent-authored" />
+<title>Beyond a Reasonable dbt: Trustworthy Pipelines for AI Agents</title>
+<script type="application/json" id="snowflake-report-metadata">
+{
+  "generated": "2026-07-27",
+  "intent": "Title / hub page for the presentation 'Beyond a Reasonable dbt: Trustworthy Pipelines for AI Agents'. Opens with the case for managing the full Cortex Agent lifecycle as code with dbt Projects on Snowflake, then links to the walkthrough and two deep-dive exhibits.",
+  "sources": [
+    { "type": "file", "path": "_github/cortex-agents-dbt-project-template/README.md" },
+    { "type": "file", "path": "_github/cortex-agents-dbt-project-template/WORKING-SESSION.md" }
+  ],
+  "links": [
+    { "title": "The Proceedings (walkthrough)", "href": "walkthrough.html" },
+    { "title": "Exhibit A: Semantic Views", "href": "semantic-views.html" },
+    { "title": "Exhibit B: Agents", "href": "agents.html" },
+    { "title": "Exhibit C: Cortex Agent Evaluations", "href": "evaluations.html" }
+  ]
+}
+</script>
+<style>
+:root {
+  --sf-blue: #29B5E8;
+  --sf-blue-deep: #11567F;
+  --sf-blue-darker: #0A3D5A;
+  --sf-cyan: #71D3DC;
+  --sf-blue-pale: #E8F6FC;
+  --gavel: #B07A2A;
+  --gavel-pale: #FBF4E6;
+  --bg: #FFFFFF;
+  --bg-alt: #F7F9FB;
+  --text: #1E1E1E;
+  --text-muted: #5A6872;
+  --border: #E5EAF0;
+  --border-strong: #CFD7E0;
+  --success: #2E7D32;
+  --warning: #E65100;
+  --radius: 6px;
+  --radius-lg: 10px;
+  --shadow-sm: 0 1px 2px rgba(17, 86, 127, 0.06);
+  --shadow-md: 0 4px 12px rgba(17, 86, 127, 0.08);
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "SF Mono", Menlo, Consolas, "Courier New", monospace;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg-alt);
+  -webkit-font-smoothing: antialiased;
+}
+.container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+.site-header {
+  background: linear-gradient(135deg, var(--sf-blue-deep) 0%, var(--sf-blue-darker) 100%);
+  color: white;
+  padding: 2rem 0;
+  border-bottom: 3px solid var(--sf-blue);
+}
+.brand { display: flex; align-items: center; gap: 0.5rem; font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; }
+.brand-mark { font-size: 1.4rem; }
+.brand-text .divider { color: var(--sf-cyan); margin: 0 0.5rem; font-weight: 300; }
+.meta { display: flex; flex-wrap: wrap; gap: 0.25rem 2rem; font-size: 0.875rem; color: rgba(255,255,255,0.85); }
+.meta-label { color: var(--sf-cyan); font-weight: 600; margin-right: 0.5rem; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; }
+.topnav { background: var(--bg); border-bottom: 1px solid var(--border); padding: 0.6rem 0; font-size: 0.85rem; }
+.topnav a { color: var(--sf-blue-deep); text-decoration: none; font-weight: 600; }
+.topnav a:hover { text-decoration: underline; }
+.topnav .sep { color: var(--border-strong); margin: 0 0.55rem; }
+.topnav .cur { color: var(--text-muted); font-weight: 700; }
+main { padding: 2.5rem 0 4rem; }
+.eyebrow { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sf-blue); margin-bottom: 0.5rem; }
+h1 { font-size: 2.5rem; font-weight: 700; color: var(--sf-blue-deep); margin: 0 0 0.5rem; letter-spacing: -0.02em; }
+h1 .pun { color: var(--sf-blue); }
+h2 { font-size: 1.35rem; font-weight: 600; color: var(--sf-blue-deep); margin: 2.75rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--border); }
+h2 .exhibit { color: var(--gavel); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 0.15rem; }
+.lead { font-size: 1.15rem; color: var(--text-muted); margin: 0 0 1rem; max-width: 70ch; }
+p { margin: 0.75rem 0; }
+.muted { color: var(--text-muted); }
+code { font-family: var(--font-mono); font-size: 0.85em; background: var(--sf-blue-pale); color: var(--sf-blue-deep); padding: 0.1em 0.4em; border-radius: 4px; }
+
+/* The case: problem vs fix */
+.case-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin: 1.5rem 0 0.5rem; }
+.case-col { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow-sm); }
+.case-col.problem { border-top: 4px solid var(--warning); }
+.case-col.fix { border-top: 4px solid var(--success); }
+.case-col h3 { margin: 0 0 0.75rem; font-size: 1.05rem; color: var(--sf-blue-deep); }
+.case-col ul { margin: 0; padding-left: 1.2rem; }
+.case-col li { margin: 0.4rem 0; color: var(--text-muted); }
+.case-col li strong { color: var(--text); }
+
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin: 1.5rem 0 2rem; }
+.metric-tile { background: linear-gradient(135deg, var(--sf-blue-pale) 0%, #FFFFFF 100%); border: 1px solid var(--border); border-left: 4px solid var(--sf-blue); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow-sm); }
+.metric-value { font-size: 1.6rem; font-weight: 700; color: var(--sf-blue-deep); line-height: 1.2; margin-bottom: 0.25rem; }
+.metric-label { font-size: 0.85rem; color: var(--text-muted); }
+
+/* Lifecycle SVG wrapper */
+.diagram-wrap { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow-sm); overflow-x: auto; margin: 1rem 0; }
+.diagram-wrap svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+.diagram-caption { font-size: 0.85rem; color: var(--text-muted); text-align: center; margin-top: 0.75rem; }
+
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; margin: 1.5rem 0; }
+.card-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 720px) { .card-grid.cols-2 { grid-template-columns: 1fr; } }
+.card {
+  display: flex; flex-direction: column;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--sf-blue);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.card.is-link:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-left-color: var(--sf-blue-deep); }
+.card-eyebrow { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gavel); margin-bottom: 0.4rem; }
+.card-title { font-size: 1.2rem; font-weight: 700; color: var(--sf-blue-deep); margin-bottom: 0.4rem; }
+.card-desc { font-size: 0.9rem; color: var(--text-muted); flex-grow: 1; }
+.card-cta { margin-top: 1rem; font-size: 0.85rem; font-weight: 600; color: var(--sf-blue-deep); }
+.card-cta .arrow { transition: transform 0.15s ease; display: inline-block; }
+.card.is-link:hover .card-cta .arrow { transform: translateX(4px); }
+
+/* Visual placeholder */
+.visual-ph { border: 2px dashed var(--border-strong); border-radius: var(--radius-lg); background: repeating-linear-gradient(45deg, #FBFDFE, #FBFDFE 10px, #F3F8FB 10px, #F3F8FB 20px); padding: 2rem 1.5rem; text-align: center; color: var(--text-muted); margin: 1.25rem 0; }
+.visual-ph .vp-tag { display: inline-block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--sf-blue-deep); background: var(--sf-blue-pale); border: 1px solid var(--sf-blue); border-radius: 4px; padding: 0.15em 0.6em; margin-bottom: 0.5rem; }
+.visual-ph .vp-hint { font-size: 0.9rem; }
+
+.site-footer { background: var(--sf-blue-darker); color: rgba(255,255,255,0.75); padding: 1.25rem 0; margin-top: 3rem; font-size: 0.875rem; text-align: center; }
+.site-footer strong { color: var(--sf-cyan); }
+@media (max-width: 700px) { h1 { font-size: 1.9rem; } .container { padding: 0 1rem; } .case-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <div class="brand">
+      <span class="brand-mark">&#10052;</span>
+      <span class="brand-text">Snowflake <span class="divider">|</span> Cortex Agents &amp; dbt</span>
+    </div>
+    <div class="meta">
+      <div class="meta-row"><span class="meta-label">Talk</span> Beyond a Reasonable dbt</div>
+      <div class="meta-row"><span class="meta-label">Subject</span> Managing the Cortex Agent lifecycle as code</div>
+    </div>
+  </div>
+</header>
+
+<nav class="topnav">
+  <div class="container">
+    <span class="cur">The Case</span>
+    <span class="sep">|</span>
+    <a href="walkthrough.html">The Proceedings</a>
+    <span class="sep">|</span>
+    <a href="semantic-views.html">Exhibit A</a>
+    <span class="sep">|</span>
+    <a href="agents.html">Exhibit B</a>
+    <span class="sep">|</span>
+    <a href="evaluations.html">Exhibit C</a>
+  </div>
+</nav>
+
+<main class="container">
+  <div class="eyebrow">Opening statement</div>
+  <h1>Beyond a Reasonable <span class="pun">dbt</span></h1>
+  <p class="lead">Trustworthy pipelines for AI agents. How to manage the full Cortex Agent lifecycle (semantic views, agent specs, evaluations, and scheduling) as version-controlled, tested, reproducible code with dbt Projects on Snowflake.</p>
+
+  <h2>The Case</h2>
+  <p>An AI agent is only as trustworthy as the data and the process behind it. Yet most agents are assembled by <strong>click-ops</strong> in a UI: no version history, no peer review, no tests, and no reliable way to promote the same thing from dev to prod. When the agent gives a wrong answer, there is nothing to diff and nothing to roll back.</p>
+  <div class="case-grid">
+    <div class="case-col problem">
+      <h3>The charge: click-ops agents</h3>
+      <ul>
+        <li><strong>No version control</strong>: changes live only in the UI</li>
+        <li><strong>No peer review</strong>: nobody signs off before prod</li>
+        <li><strong>No tests</strong>: accuracy is a vibe, not a metric</li>
+        <li><strong>No reproducibility</strong>: dev and prod drift apart</li>
+        <li><strong>No promotion path</strong>: rebuilding by hand per environment</li>
+      </ul>
+    </div>
+    <div class="case-col fix">
+      <h3>The defense: agents as code</h3>
+      <ul>
+        <li><strong>Git-backed</strong>: every change diffed and reviewable</li>
+        <li><strong>PR review + CI</strong>: builds on dev before merge</li>
+        <li><strong>Measured</strong>: evaluations gate on &ge;95% correctness</li>
+        <li><strong>One codebase</strong>: <code>env.yml</code> targets dev / staging / prod</li>
+        <li><strong>One command</strong>: <code>EXECUTE DBT PROJECT</code> rebuilds it all</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Exhibits, entered into evidence</h2>
+  <div class="metric-grid">
+    <div class="metric-tile"><div class="metric-value">5</div><div class="metric-label">Phases from questions to production</div></div>
+    <div class="metric-tile"><div class="metric-value">3</div><div class="metric-label">Environments, one codebase</div></div>
+    <div class="metric-tile"><div class="metric-value">&ge;95%</div><div class="metric-label">Answer-correctness bar to ship</div></div>
+    <div class="metric-tile"><div class="metric-value">0</div><div class="metric-label">Click-ops steps</div></div>
+    <div class="metric-tile"><div class="metric-value">1</div><div class="metric-label"><code>EXECUTE DBT PROJECT</code> to rebuild</div></div>
+  </div>
+
+  <h2>The lifecycle, at a glance</h2>
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 1000 240" role="img" aria-label="Cortex Agent lifecycle: Sources to Staging to Semantic View to Agent to Evaluations to Ship, with a feedback loop from Evaluations back to Semantic View.">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#11567F"></path>
+        </marker>
+        <marker id="arrow-loop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#B07A2A"></path>
+        </marker>
+      </defs>
+      <!-- Stage boxes -->
+      <g font-family="-apple-system, Segoe UI, sans-serif" font-size="14" text-anchor="middle">
+        <g>
+          <rect x="8"   y="70" width="140" height="60" rx="8" fill="#E8F6FC" stroke="#29B5E8" stroke-width="1.5"></rect>
+          <text x="78"  y="95" font-weight="700" fill="#11567F">1. Sources</text>
+          <text x="78"  y="114" font-size="11" fill="#5A6872">sources.yml</text>
+        </g>
+        <g>
+          <rect x="180" y="70" width="140" height="60" rx="8" fill="#E8F6FC" stroke="#29B5E8" stroke-width="1.5"></rect>
+          <text x="250" y="95" font-weight="700" fill="#11567F">2. Staging</text>
+          <text x="250" y="114" font-size="11" fill="#5A6872">stg_*.sql</text>
+        </g>
+        <g>
+          <rect x="352" y="70" width="150" height="60" rx="8" fill="#D9EEF9" stroke="#11567F" stroke-width="2"></rect>
+          <text x="427" y="93" font-weight="700" fill="#11567F">3. Semantic View</text>
+          <text x="427" y="112" font-size="11" fill="#5A6872">Exhibit A</text>
+        </g>
+        <g>
+          <rect x="534" y="70" width="150" height="60" rx="8" fill="#D9EEF9" stroke="#11567F" stroke-width="2"></rect>
+          <text x="609" y="93" font-weight="700" fill="#11567F">4. Agent</text>
+          <text x="609" y="112" font-size="11" fill="#5A6872">Exhibit B</text>
+        </g>
+        <g>
+          <rect x="716" y="70" width="150" height="60" rx="8" fill="#FBF4E6" stroke="#B07A2A" stroke-width="2"></rect>
+          <text x="791" y="93" font-weight="700" fill="#8A5E1F">5. Evaluations</text>
+          <text x="791" y="112" font-size="11" fill="#5A6872">The Verdict</text>
+        </g>
+        <g>
+          <rect x="898" y="70" width="94" height="60" rx="8" fill="#F1F8F4" stroke="#2E7D32" stroke-width="1.5"></rect>
+          <text x="945" y="95" font-weight="700" fill="#2E7D32">Ship</text>
+          <text x="945" y="114" font-size="10" fill="#5A6872">SI / Teams</text>
+        </g>
+      </g>
+      <!-- Forward arrows -->
+      <g stroke="#11567F" stroke-width="2" fill="none">
+        <line x1="150" y1="100" x2="178" y2="100" marker-end="url(#arrow)"></line>
+        <line x1="322" y1="100" x2="350" y2="100" marker-end="url(#arrow)"></line>
+        <line x1="504" y1="100" x2="532" y2="100" marker-end="url(#arrow)"></line>
+        <line x1="686" y1="100" x2="714" y2="100" marker-end="url(#arrow)"></line>
+        <line x1="868" y1="100" x2="896" y2="100" marker-end="url(#arrow)"></line>
+      </g>
+      <!-- Feedback loop: Evaluations back to Semantic View -->
+      <path d="M 791 132 C 791 200, 427 200, 427 134" stroke="#B07A2A" stroke-width="2" fill="none" stroke-dasharray="5 4" marker-end="url(#arrow-loop)"></path>
+      <text x="609" y="222" text-anchor="middle" font-family="-apple-system, Segoe UI, sans-serif" font-size="12" fill="#8A5E1F">iterate: inspect trace &rarr; fix the right layer &rarr; re-run</text>
+    </svg>
+    <div class="diagram-caption">One dbt project builds every box. The feedback loop is where evaluation scores drive the next improvement cycle.</div>
+  </div>
+
+  <h2>The proceedings &amp; the exhibits</h2>
+  <div class="card-grid cols-2">
+    <a class="card is-link" href="walkthrough.html">
+      <div class="card-eyebrow">The Proceedings</div>
+      <div class="card-title">The Full Build, Phase by Phase</div>
+      <div class="card-desc">The five-phase runbook from business questions to a shipped agent (orientation, semantic view, orchestration, response, tools, and the evaluation verdict) with the exact dbt commands to run live.</div>
+      <div class="card-cta">Enter the courtroom <span class="arrow">&rarr;</span></div>
+    </a>
+    <a class="card is-link" href="semantic-views.html">
+      <div class="card-eyebrow">Exhibit A</div>
+      <div class="card-title">The Semantic View</div>
+      <div class="card-desc">Where accuracy is won or lost: business names, KPIs as metrics, verified queries, the additive AI_SQL_GENERATION and AI_QUESTION_CATEGORIZATION clauses, and the enforced clause order.</div>
+      <div class="card-cta">Examine the evidence <span class="arrow">&rarr;</span></div>
+    </a>
+    <a class="card is-link" href="agents.html">
+      <div class="card-eyebrow">Exhibit B</div>
+      <div class="card-title">The Agent Spec</div>
+      <div class="card-desc">The three-layer model (orchestration, response, and tool descriptions) plus the four-part tool-description formula that drives routing accuracy, and the failure patterns to watch for.</div>
+      <div class="card-cta">Examine the evidence <span class="arrow">&rarr;</span></div>
+    </a>
+    <a class="card is-link" href="evaluations.html">
+      <div class="card-eyebrow">Exhibit C</div>
+      <div class="card-title">Cortex Agent Evaluations</div>
+      <div class="card-desc">How the verdict is reached: the Goal-Plan-Action metrics, the ground-truth dataset, running an evaluation, and iterating to the &ge;95% ship bar.</div>
+      <div class="card-cta">Examine the evidence <span class="arrow">&rarr;</span></div>
+    </a>
+  </div>
+
+  <div class="visual-ph">
+    <div class="vp-tag">Visual</div>
+    <div class="vp-hint">Drop an opening screenshot here, e.g. the Snowsight Workspace with the dbt project open, or the finished agent answering a question in Snowflake Intelligence.</div>
+  </div>
+
+  <h2>About this deck</h2>
+  <p class="muted">Built from the <code>cortex-agents-dbt-project-template</code> (see <a href="https://docs.snowflake.com/en/user-guide/data-engineering/dbt-projects-on-snowflake">dbt Projects on Snowflake</a>). The walkthrough mirrors the project's <code>WORKING-SESSION.md</code> runbook; the exhibits draw on its <code>README.md</code> best practices.</p>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>Beyond a Reasonable dbt &middot; <strong>Snowflake | Cortex Agents &amp; dbt</strong> &middot; Trustworthy Pipelines for AI Agents</p>
+  </div>
+</footer>
+
+</body>
+</html>

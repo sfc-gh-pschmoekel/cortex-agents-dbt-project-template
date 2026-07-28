@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="snowflake-source" content="cortex-agent-authored" />
+<title>Exhibit C: Cortex Agent Evaluations</title>
+<script type="application/json" id="snowflake-report-metadata">
+{
+  "generated": "2026-07-28",
+  "intent": "Exhibit C overview hub for 'Beyond a Reasonable dbt': Cortex Agent Evaluations (AI Observability). Links to five section sub-pages: why evaluate, the metrics, the dataset, run and inspect, iterate and operate.",
+  "sources": [
+    { "type": "url", "url": "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents-evaluations" },
+    { "type": "url", "url": "https://docs.snowflake.com/en/user-guide/snowflake-cortex/ai-observability" },
+    { "type": "url", "url": "https://docs.snowflake.com/en/sql-reference/functions/execute_ai_evaluation" }
+  ],
+  "links": [
+    { "title": "1. Why evaluate", "href": "exc-overview.html" },
+    { "title": "2. The metrics", "href": "exc-metrics.html" },
+    { "title": "3. The dataset", "href": "exc-dataset.html" },
+    { "title": "4. Run & inspect", "href": "exc-running.html" },
+    { "title": "5. Iterate & operate", "href": "exc-iterate.html" }
+  ]
+}
+</script>
+<style>
+:root {
+  --sf-blue: #29B5E8; --sf-blue-deep: #11567F; --sf-blue-darker: #0A3D5A; --sf-cyan: #71D3DC; --sf-blue-pale: #E8F6FC;
+  --gavel: #B07A2A; --gavel-deep: #8A5E1F; --gavel-pale: #FBF4E6;
+  --bg: #FFFFFF; --bg-alt: #F7F9FB; --text: #1E1E1E; --text-muted: #5A6872; --border: #E5EAF0; --border-strong: #CFD7E0;
+  --success: #2E7D32; --warning: #E65100; --radius: 6px; --radius-lg: 10px;
+  --shadow-sm: 0 1px 2px rgba(17,86,127,0.06); --shadow-md: 0 4px 12px rgba(17,86,127,0.08);
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "SF Mono", Menlo, Consolas, "Courier New", monospace;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--font-sans); font-size: 16px; line-height: 1.6; color: var(--text); background: var(--bg-alt); -webkit-font-smoothing: antialiased; }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+.site-header { background: linear-gradient(135deg, var(--sf-blue-deep) 0%, var(--sf-blue-darker) 100%); color: white; padding: 2rem 0; border-bottom: 3px solid var(--gavel); }
+.brand { display: flex; align-items: center; gap: 0.5rem; font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; }
+.brand-mark { font-size: 1.4rem; }
+.brand-text .divider { color: var(--sf-cyan); margin: 0 0.5rem; font-weight: 300; }
+.meta { display: flex; flex-wrap: wrap; gap: 0.25rem 2rem; font-size: 0.875rem; color: rgba(255,255,255,0.85); }
+.meta-label { color: var(--sf-cyan); font-weight: 600; margin-right: 0.5rem; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; }
+.topnav { background: var(--bg); border-bottom: 1px solid var(--border); padding: 0.6rem 0; font-size: 0.85rem; }
+.topnav a { color: var(--sf-blue-deep); text-decoration: none; font-weight: 600; }
+.topnav a:hover { text-decoration: underline; }
+.topnav .sep { color: var(--border-strong); margin: 0 0.55rem; }
+.topnav .cur { color: var(--text-muted); font-weight: 700; }
+.tabbar { background: var(--bg); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 20; box-shadow: var(--shadow-sm); }
+.tabbar .container { display: flex; flex-wrap: wrap; gap: 0.15rem; }
+.tab { display: inline-block; padding: 0.7rem 0.9rem; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-decoration: none; border-bottom: 3px solid transparent; white-space: nowrap; }
+.tab:hover { color: var(--sf-blue-deep); background: var(--bg-alt); }
+.tab.active { color: var(--gavel-deep); border-bottom-color: var(--gavel); }
+main { padding: 2.25rem 0 4rem; }
+.eyebrow { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gavel); margin-bottom: 0.5rem; }
+h1 { font-size: 2.1rem; font-weight: 700; color: var(--sf-blue-deep); margin: 0 0 0.5rem; letter-spacing: -0.02em; }
+h2 { font-size: 1.3rem; font-weight: 600; color: var(--sf-blue-deep); margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--border); }
+.lead { font-size: 1.12rem; color: var(--text-muted); margin: 0 0 1rem; max-width: 70ch; }
+p { margin: 0.75rem 0; }
+.muted { color: var(--text-muted); }
+code { font-family: var(--font-mono); font-size: 0.85em; background: var(--sf-blue-pale); color: var(--sf-blue-deep); padding: 0.1em 0.4em; border-radius: 4px; }
+.badge { display: inline-block; font-size: 0.72rem; font-weight: 700; border-radius: 20px; padding: 0.15em 0.7em; margin-left: 0.4rem; vertical-align: middle; }
+.badge-ga { background: #F1F8F4; color: var(--success); border: 1px solid #A5D6A7; }
+.badge-pp { background: var(--gavel-pale); color: var(--gavel-deep); border: 1px solid var(--gavel); }
+.note { border-left: 4px solid var(--sf-blue); background: var(--sf-blue-pale); padding: 0.7rem 1rem; border-radius: var(--radius); margin: 1rem 0; font-size: 0.9rem; color: var(--sf-blue-darker); }
+.note strong { color: var(--sf-blue-deep); }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; margin: 1.5rem 0; }
+.card { display: flex; flex-direction: column; background: var(--bg); border: 1px solid var(--border); border-left: 4px solid var(--gavel); border-radius: var(--radius-lg); padding: 1.4rem; box-shadow: var(--shadow-sm); text-decoration: none; color: inherit; transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease; }
+.card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-left-color: var(--gavel-deep); }
+.card-step { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gavel); margin-bottom: 0.35rem; }
+.card-title { font-size: 1.12rem; font-weight: 700; color: var(--sf-blue-deep); margin-bottom: 0.4rem; }
+.card-desc { font-size: 0.9rem; color: var(--text-muted); flex-grow: 1; }
+.card-cta { margin-top: 1rem; font-size: 0.85rem; font-weight: 600; color: var(--sf-blue-deep); }
+.card-cta .arrow { transition: transform 0.15s ease; display: inline-block; }
+.card:hover .card-cta .arrow { transform: translateX(4px); }
+.site-footer { background: var(--sf-blue-darker); color: rgba(255,255,255,0.75); padding: 1.25rem 0; margin-top: 3rem; font-size: 0.875rem; text-align: center; }
+.site-footer strong { color: var(--sf-cyan); }
+.site-footer a { color: var(--sf-cyan); }
+@media (max-width: 700px) { h1 { font-size: 1.7rem; } .container { padding: 0 1rem; } }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <div class="brand">
+      <span class="brand-mark">&#10052;</span>
+      <span class="brand-text">Snowflake <span class="divider">|</span> Cortex Agents &amp; dbt</span>
+    </div>
+    <div class="meta">
+      <div class="meta-row"><span class="meta-label">Talk</span> Beyond a Reasonable dbt</div>
+      <div class="meta-row"><span class="meta-label">Section</span> Exhibit C</div>
+    </div>
+  </div>
+</header>
+
+<nav class="topnav">
+  <div class="container">
+    <a href="index.html">The Case</a>
+    <span class="sep">|</span>
+    <a href="walkthrough.html">The Proceedings</a>
+    <span class="sep">|</span>
+    <a href="semantic-views.html">Exhibit A</a>
+    <span class="sep">|</span>
+    <a href="agents.html">Exhibit B</a>
+    <span class="sep">|</span>
+    <span class="cur">Exhibit C</span>
+  </div>
+</nav>
+
+<nav class="tabbar">
+  <div class="container">
+    <a class="tab" href="exc-overview.html">1 &middot; Why Evaluate</a>
+    <a class="tab" href="exc-metrics.html">2 &middot; The Metrics</a>
+    <a class="tab" href="exc-dataset.html">3 &middot; The Dataset</a>
+    <a class="tab" href="exc-running.html">4 &middot; Run &amp; Inspect</a>
+    <a class="tab" href="exc-iterate.html">5 &middot; Iterate</a>
+  </div>
+</nav>
+
+<main class="container">
+  <div class="eyebrow">Exhibit C</div>
+  <h1>Cortex Agent Evaluations</h1>
+  <p class="lead">This is how "the verdict" is reached. Cortex Agent evaluations let you test, baseline, and hill-climb on an agent's behavior so you know when it is ready to roll out, scoring not just the final answer but each step of its reasoning.</p>
+
+  <div class="note"><strong>Status:</strong> Cortex Agent evaluations reached <strong>general availability</strong> on 2026-03-13 (answer correctness, logical consistency, custom metrics). The two tool metrics (tool selection and tool execution accuracy) are in <strong>public preview</strong> as of 2026-06-11. <span class="badge badge-ga">GA</span> <span class="badge badge-pp">Public Preview</span></div>
+
+  <p>Exhibit C is the deep dive behind the walkthrough's <a href="wt-evaluation.html">Phase 5: The Verdict</a>. Where the walkthrough shows the commands to run, this exhibit explains the framework, the metrics, and how to iterate.</p>
+
+  <h2>Pick a section</h2>
+  <div class="card-grid">
+    <a class="card" href="exc-overview.html">
+      <div class="card-step">Section 1</div>
+      <div class="card-title">Why Evaluate</div>
+      <div class="card-desc">The Goal-Plan-Action framework: why evaluating each step beats judging only the answer, plus GA/preview status and access prerequisites.</div>
+      <div class="card-cta">Open <span class="arrow">&rarr;</span></div>
+    </a>
+    <a class="card" href="exc-metrics.html">
+      <div class="card-step">Section 2</div>
+      <div class="card-title">The Metrics</div>
+      <div class="card-desc">Four system metrics mapped to the GPA loop, which need ground truth, and how custom LLM-judge metrics work.</div>
+      <div class="card-cta">Open <span class="arrow">&rarr;</span></div>
+    </a>
+    <a class="card" href="exc-dataset.html">
+      <div class="card-step">Section 3</div>
+      <div class="card-title">The Dataset</div>
+      <div class="card-desc">The two-column dataset, the ground_truth VARIANT keys, AC vs tool tracks, the empty-array no-tool guardrail, and writing good rubrics.</div>
+      <div class="card-cta">Open <span class="arrow">&rarr;</span></div>
+    </a>
+    <a class="card" href="exc-running.html">
+      <div class="card-step">Section 4</div>
+      <div class="card-title">Run &amp; Inspect</div>
+      <div class="card-desc">EXECUTE_AI_EVALUATION, the YAML config, the GET_AI_* retrieval functions, and the Snowsight Evaluations tab.</div>
+      <div class="card-cta">Open <span class="arrow">&rarr;</span></div>
+    </a>
+    <a class="card" href="exc-iterate.html">
+      <div class="card-step">Section 5</div>
+      <div class="card-title">Iterate &amp; Operate</div>
+      <div class="card-desc">Interpret scores, seed datasets from production, use Cortex Code sub-skills, schedule runs, and mind the cost and known limits.</div>
+      <div class="card-cta">Open <span class="arrow">&rarr;</span></div>
+    </a>
+  </div>
+
+  <p class="muted">Sources: <a href="https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents-evaluations">Cortex Agent evaluations</a>, <a href="https://docs.snowflake.com/en/user-guide/snowflake-cortex/ai-observability">AI Observability in Snowflake Cortex</a>.</p>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>Beyond a Reasonable dbt &middot; <strong>Snowflake | Cortex Agents &amp; dbt</strong> &middot; <a href="index.html">Back to The Case</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

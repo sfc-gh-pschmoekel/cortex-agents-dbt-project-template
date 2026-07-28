@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="snowflake-source" content="cortex-agent-authored" />
+<title>Exhibit C, 1: Why Evaluate</title>
+<script type="application/json" id="snowflake-report-metadata">
+{
+  "generated": "2026-07-28",
+  "intent": "Exhibit C section 1 of 5: why evaluate agents, the Goal-Plan-Action (GPA) framework, GA/preview status, and access-control prerequisites.",
+  "sources": [
+    { "type": "url", "url": "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents-evaluations" }
+  ]
+}
+</script>
+<style>
+:root {
+  --sf-blue: #29B5E8; --sf-blue-deep: #11567F; --sf-blue-darker: #0A3D5A; --sf-cyan: #71D3DC; --sf-blue-pale: #E8F6FC;
+  --gavel: #B07A2A; --gavel-deep: #8A5E1F; --gavel-pale: #FBF4E6;
+  --bg: #FFFFFF; --bg-alt: #F7F9FB; --text: #1E1E1E; --text-muted: #5A6872; --border: #E5EAF0; --border-strong: #CFD7E0;
+  --success: #2E7D32; --warning: #E65100; --radius: 6px; --radius-lg: 10px;
+  --shadow-sm: 0 1px 2px rgba(17,86,127,0.06); --shadow-md: 0 4px 12px rgba(17,86,127,0.08);
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "SF Mono", Menlo, Consolas, "Courier New", monospace;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--font-sans); font-size: 16px; line-height: 1.6; color: var(--text); background: var(--bg-alt); -webkit-font-smoothing: antialiased; }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+.site-header { background: linear-gradient(135deg, var(--sf-blue-deep) 0%, var(--sf-blue-darker) 100%); color: white; padding: 2rem 0; border-bottom: 3px solid var(--gavel); }
+.brand { display: flex; align-items: center; gap: 0.5rem; font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; }
+.brand-mark { font-size: 1.4rem; }
+.brand-text .divider { color: var(--sf-cyan); margin: 0 0.5rem; font-weight: 300; }
+.meta { display: flex; flex-wrap: wrap; gap: 0.25rem 2rem; font-size: 0.875rem; color: rgba(255,255,255,0.85); }
+.meta-label { color: var(--sf-cyan); font-weight: 600; margin-right: 0.5rem; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; }
+.topnav { background: var(--bg); border-bottom: 1px solid var(--border); padding: 0.6rem 0; font-size: 0.85rem; }
+.topnav a { color: var(--sf-blue-deep); text-decoration: none; font-weight: 600; }
+.topnav a:hover { text-decoration: underline; }
+.topnav .sep { color: var(--border-strong); margin: 0 0.55rem; }
+.topnav .cur { color: var(--text-muted); font-weight: 700; }
+.tabbar { background: var(--bg); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 20; box-shadow: var(--shadow-sm); }
+.tabbar .container { display: flex; flex-wrap: wrap; gap: 0.15rem; }
+.tab { display: inline-block; padding: 0.7rem 0.9rem; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-decoration: none; border-bottom: 3px solid transparent; white-space: nowrap; }
+.tab:hover { color: var(--sf-blue-deep); background: var(--bg-alt); }
+.tab.active { color: var(--gavel-deep); border-bottom-color: var(--gavel); }
+main { padding: 2.25rem 0 4rem; }
+.eyebrow { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gavel); margin-bottom: 0.5rem; }
+h1 { font-size: 2.1rem; font-weight: 700; color: var(--sf-blue-deep); margin: 0 0 0.5rem; letter-spacing: -0.02em; }
+h2 { font-size: 1.25rem; font-weight: 600; color: var(--sf-blue-deep); margin: 2.25rem 0 0.75rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--border); }
+.lead { font-size: 1.12rem; color: var(--text-muted); margin: 0 0 1rem; max-width: 70ch; }
+p { margin: 0.75rem 0; }
+.muted { color: var(--text-muted); }
+code { font-family: var(--font-mono); font-size: 0.85em; background: var(--sf-blue-pale); color: var(--sf-blue-deep); padding: 0.1em 0.4em; border-radius: 4px; }
+ul { margin: 0.75rem 0; padding-left: 1.3rem; }
+li { margin: 0.35rem 0; }
+.diagram-wrap { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow-sm); overflow-x: auto; margin: 1rem 0; }
+.diagram-wrap svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+.diagram-caption { font-size: 0.85rem; color: var(--text-muted); text-align: center; margin-top: 0.75rem; }
+.note { border-left: 4px solid var(--sf-blue); background: var(--sf-blue-pale); padding: 0.7rem 1rem; border-radius: var(--radius); margin: 1rem 0; font-size: 0.9rem; color: var(--sf-blue-darker); }
+.note strong { color: var(--sf-blue-deep); }
+.pager { display: flex; justify-content: space-between; gap: 1rem; margin: 3rem 0 0; }
+.pager a { flex: 1 1 0; text-decoration: none; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 0.9rem 1.1rem; color: var(--sf-blue-deep); background: var(--bg); box-shadow: var(--shadow-sm); transition: transform 0.15s ease, box-shadow 0.15s ease; }
+.pager a:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.pager .spacer { flex: 1 1 0; }
+.pager .nxt { text-align: right; }
+.pager .dir { display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); font-weight: 700; margin-bottom: 0.15rem; }
+.pager .ttl { font-weight: 700; }
+.site-footer { background: var(--sf-blue-darker); color: rgba(255,255,255,0.75); padding: 1.25rem 0; margin-top: 3rem; font-size: 0.875rem; text-align: center; }
+.site-footer strong { color: var(--sf-cyan); }
+.site-footer a { color: var(--sf-cyan); }
+@media (max-width: 700px) { h1 { font-size: 1.7rem; } .container { padding: 0 1rem; } .pager { flex-direction: column; } .pager .spacer { display: none; } }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <div class="brand">
+      <span class="brand-mark">&#10052;</span>
+      <span class="brand-text">Snowflake <span class="divider">|</span> Cortex Agents &amp; dbt</span>
+    </div>
+    <div class="meta">
+      <div class="meta-row"><span class="meta-label">Talk</span> Beyond a Reasonable dbt</div>
+      <div class="meta-row"><span class="meta-label">Section</span> Exhibit C / Why Evaluate</div>
+    </div>
+  </div>
+</header>
+
+<nav class="topnav">
+  <div class="container">
+    <a href="index.html">The Case</a>
+    <span class="sep">|</span>
+    <a href="walkthrough.html">The Proceedings</a>
+    <span class="sep">|</span>
+    <a href="semantic-views.html">Exhibit A</a>
+    <span class="sep">|</span>
+    <a href="agents.html">Exhibit B</a>
+    <span class="sep">|</span>
+    <span class="cur">Exhibit C</span>
+  </div>
+</nav>
+
+<nav class="tabbar">
+  <div class="container">
+    <a class="tab active" href="exc-overview.html">1 &middot; Why Evaluate</a>
+    <a class="tab" href="exc-metrics.html">2 &middot; The Metrics</a>
+    <a class="tab" href="exc-dataset.html">3 &middot; The Dataset</a>
+    <a class="tab" href="exc-running.html">4 &middot; Run &amp; Inspect</a>
+    <a class="tab" href="exc-iterate.html">5 &middot; Iterate</a>
+  </div>
+</nav>
+
+<main class="container">
+  <div class="eyebrow">Exhibit C &middot; Section 1 of 5</div>
+  <h1>Why Evaluate</h1>
+  <p class="lead">Cortex Agent evaluations let you test, baseline, and hill-climb on an agent's behavior and performance, so you know when it is ready to roll out. You evaluate against both ground-truth and reference-free metrics, and the agent's activity is traced and monitored so you can see each step on the way to its answer.</p>
+
+  <h2>The Goal-Plan-Action framework</h2>
+  <p>Instead of judging only the final answer, the metrics follow Snowflake's <strong>Goal-Plan-Action (GPA)</strong> framework: they evaluate the agent at each stage of its reasoning, so you can pinpoint where it went wrong or was inefficient. The four system metrics trace the loop from the user's goal to the agent's answer.</p>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 940 250" role="img" aria-label="Goal-Plan-Action loop: Goal to Plan (tool selection accuracy), Plan to Actions (tool execution accuracy), Actions to Answer (response), Answer back to Goal (answer correctness); logical consistency spans the whole loop.">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#11567F"></path></marker>
+        <marker id="arrg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#B07A2A"></path></marker>
+      </defs>
+      <g font-family="-apple-system, Segoe UI, sans-serif" font-size="15" text-anchor="middle">
+        <g><rect x="8" y="70" width="150" height="60" rx="9" fill="#E8F6FC" stroke="#29B5E8" stroke-width="1.5"></rect><text x="83" y="97" font-weight="700" fill="#11567F">Goal</text><text x="83" y="116" font-size="11" fill="#5A6872">the user's question</text></g>
+        <g><rect x="262" y="70" width="150" height="60" rx="9" fill="#E8F6FC" stroke="#29B5E8" stroke-width="1.5"></rect><text x="337" y="97" font-weight="700" fill="#11567F">Plan</text><text x="337" y="116" font-size="11" fill="#5A6872">which tools to call</text></g>
+        <g><rect x="516" y="70" width="150" height="60" rx="9" fill="#E8F6FC" stroke="#29B5E8" stroke-width="1.5"></rect><text x="591" y="97" font-weight="700" fill="#11567F">Actions</text><text x="591" y="116" font-size="11" fill="#5A6872">tool calls run</text></g>
+        <g><rect x="770" y="70" width="150" height="60" rx="9" fill="#FBF4E6" stroke="#B07A2A" stroke-width="2"></rect><text x="845" y="97" font-weight="700" fill="#8A5E1F">Answer</text><text x="845" y="116" font-size="11" fill="#5A6872">the verdict</text></g>
+      </g>
+      <g stroke="#11567F" stroke-width="2.5" fill="none">
+        <line x1="158" y1="100" x2="260" y2="100" marker-end="url(#arr)"></line>
+        <line x1="412" y1="100" x2="514" y2="100" marker-end="url(#arr)"></line>
+        <line x1="666" y1="100" x2="768" y2="100" marker-end="url(#arr)"></line>
+      </g>
+      <g font-family="-apple-system, Segoe UI, sans-serif" text-anchor="middle" stroke="none">
+        <text x="209" y="58" fill="#11567F" font-size="13" font-weight="700">tool selection</text>
+        <text x="209" y="43" fill="#5A6872" font-size="10.5">Public Preview</text>
+        <text x="463" y="58" fill="#11567F" font-size="13" font-weight="700">tool execution</text>
+        <text x="463" y="43" fill="#5A6872" font-size="10.5">Public Preview</text>
+        <text x="717" y="58" fill="#11567F" font-size="13" font-weight="700">response</text>
+      </g>
+      <path d="M845 132 C 845 205, 83 205, 83 132" stroke="#B07A2A" stroke-width="2.5" fill="none" marker-end="url(#arrg)"></path>
+      <text x="464" y="198" text-anchor="middle" font-family="-apple-system, Segoe UI, sans-serif" font-size="13" font-weight="700" fill="#8A5E1F">answer correctness (actions back to goal)</text>
+      <text x="464" y="228" text-anchor="middle" font-family="-apple-system, Segoe UI, sans-serif" font-size="12" fill="#5A6872">logical consistency spans the whole loop, reference-free</text>
+    </svg>
+    <div class="diagram-caption">The four system metrics trace the GPA loop. Three need ground truth; logical consistency does not.</div>
+  </div>
+
+  <ul>
+    <li><strong>Tool selection accuracy</strong> covers goal to plan: does the orchestration layer invoke the tools you expect for the user's goal?</li>
+    <li><strong>Tool execution accuracy</strong> covers plan to actions: does each tool that runs get appropriate input and return output that meets your requirements?</li>
+    <li><strong>Answer correctness</strong> closes the loop from actions back to goal: how closely does the final response match the expected ground truth?</li>
+    <li><strong>Logical consistency</strong> spans the whole loop: consistency across instructions, planning, and tool calls. It is reference-free, so it needs no ground truth.</li>
+  </ul>
+
+  <h2>Access to run an evaluation</h2>
+  <p>Evaluations compute their metrics with the <code>AI_COMPLETE</code> function using LLM-as-a-judge, so the role that runs an evaluation needs, among others:</p>
+  <ul>
+    <li>The <code>SNOWFLAKE.CORTEX_USER</code> database role and the <code>USE AI FUNCTIONS</code> privilege (to call <code>AI_COMPLETE</code>).</li>
+    <li><code>EXECUTE TASK ON ACCOUNT</code>, and <code>USAGE</code> on the databases and schemas holding the agent and the evaluation data.</li>
+    <li><code>USAGE</code> / <code>OWNERSHIP</code> and <code>MONITOR</code> on the agent, and access to every tool the agent uses.</li>
+    <li>In Snowsight, <code>USAGE</code> on the warehouse used for the run.</li>
+  </ul>
+
+  <div class="note"><strong>Where this sits:</strong> this is the deep dive behind the walkthrough's <a href="wt-evaluation.html">Phase 5</a>. The walkthrough runs the commands; this exhibit explains the framework.</div>
+
+  <nav class="pager">
+    <span class="spacer"></span>
+    <a class="nxt" href="exc-metrics.html"><span class="dir">Next &rarr;</span><span class="ttl">2 &middot; The Metrics</span></a>
+  </nav>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>Beyond a Reasonable dbt &middot; <strong>Snowflake | Cortex Agents &amp; dbt</strong> &middot; <a href="evaluations.html">Exhibit C overview</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

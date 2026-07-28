@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="snowflake-source" content="cortex-agent-authored" />
+<title>The Proceedings: Building the Agent, Phase by Phase</title>
+<script type="application/json" id="snowflake-report-metadata">
+{
+  "generated": "2026-07-27",
+  "intent": "Overview hub for 'The Proceedings' walkthrough of 'Beyond a Reasonable dbt'. Introduces the five-phase build and the contract, then links to five lifecycle-stage sub-pages (Setup, Semantic View, The Agent, Evaluation, Ship & Automate).",
+  "sources": [
+    { "type": "file", "path": "_github/cortex-agents-dbt-project-template/WORKING-SESSION.md" },
+    { "type": "file", "path": "_github/cortex-agents-dbt-project-template/README.md" }
+  ],
+  "links": [
+    { "title": "1. Setup & Environment", "href": "wt-setup.html" },
+    { "title": "2. Semantic View", "href": "wt-semantic-view.html" },
+    { "title": "3. The Agent", "href": "wt-agent.html" },
+    { "title": "4. Evaluation", "href": "wt-evaluation.html" },
+    { "title": "5. Ship & Automate", "href": "wt-ship.html" }
+  ]
+}
+</script>
+<style>
+:root {
+  --sf-blue: #29B5E8;
+  --sf-blue-deep: #11567F;
+  --sf-blue-darker: #0A3D5A;
+  --sf-cyan: #71D3DC;
+  --sf-blue-pale: #E8F6FC;
+  --gavel: #B07A2A;
+  --gavel-deep: #8A5E1F;
+  --gavel-pale: #FBF4E6;
+  --bg: #FFFFFF;
+  --bg-alt: #F7F9FB;
+  --text: #1E1E1E;
+  --text-muted: #5A6872;
+  --border: #E5EAF0;
+  --border-strong: #CFD7E0;
+  --success: #2E7D32;
+  --warning: #E65100;
+  --radius: 6px;
+  --radius-lg: 10px;
+  --shadow-sm: 0 1px 2px rgba(17, 86, 127, 0.06);
+  --shadow-md: 0 4px 12px rgba(17, 86, 127, 0.08);
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "SF Mono", Menlo, Consolas, "Courier New", monospace;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--font-sans); font-size: 16px; line-height: 1.6; color: var(--text); background: var(--bg-alt); -webkit-font-smoothing: antialiased; }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+.site-header { background: linear-gradient(135deg, var(--sf-blue-deep) 0%, var(--sf-blue-darker) 100%); color: white; padding: 2rem 0; border-bottom: 3px solid var(--sf-blue); }
+.brand { display: flex; align-items: center; gap: 0.5rem; font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; }
+.brand-mark { font-size: 1.4rem; }
+.brand-text .divider { color: var(--sf-cyan); margin: 0 0.5rem; font-weight: 300; }
+.meta { display: flex; flex-wrap: wrap; gap: 0.25rem 2rem; font-size: 0.875rem; color: rgba(255,255,255,0.85); }
+.meta-label { color: var(--sf-cyan); font-weight: 600; margin-right: 0.5rem; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; }
+.topnav { background: var(--bg); border-bottom: 1px solid var(--border); padding: 0.6rem 0; font-size: 0.85rem; }
+.topnav a { color: var(--sf-blue-deep); text-decoration: none; font-weight: 600; }
+.topnav a:hover { text-decoration: underline; }
+.topnav .sep { color: var(--border-strong); margin: 0 0.55rem; }
+.topnav .cur { color: var(--text-muted); font-weight: 700; }
+.tabbar { background: var(--bg); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 20; box-shadow: var(--shadow-sm); }
+.tabbar .container { display: flex; flex-wrap: wrap; gap: 0.15rem; }
+.tab { display: inline-block; padding: 0.7rem 0.9rem; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-decoration: none; border-bottom: 3px solid transparent; white-space: nowrap; }
+.tab:hover { color: var(--sf-blue-deep); background: var(--bg-alt); }
+.tab.active { color: var(--sf-blue-deep); border-bottom-color: var(--sf-blue); }
+main { padding: 2.25rem 0 4rem; }
+.eyebrow { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gavel); margin-bottom: 0.5rem; }
+h1 { font-size: 2.15rem; font-weight: 700; color: var(--sf-blue-deep); margin: 0 0 0.5rem; letter-spacing: -0.02em; }
+h2 { font-size: 1.3rem; font-weight: 600; color: var(--sf-blue-deep); margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--border); }
+.lead { font-size: 1.12rem; color: var(--text-muted); margin: 0 0 1rem; max-width: 70ch; }
+p { margin: 0.75rem 0; }
+.muted { color: var(--text-muted); }
+code { font-family: var(--font-mono); font-size: 0.85em; background: var(--sf-blue-pale); color: var(--sf-blue-deep); padding: 0.1em 0.4em; border-radius: 4px; }
+.note { border-left: 4px solid var(--sf-blue); background: var(--sf-blue-pale); padding: 0.7rem 1rem; border-radius: var(--radius); margin: 1rem 0; font-size: 0.9rem; color: var(--sf-blue-darker); }
+.note strong { color: var(--sf-blue-deep); }
+/* Section cards */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; margin: 1.5rem 0; }
+.card { display: flex; flex-direction: column; background: var(--bg); border: 1px solid var(--border); border-left: 4px solid var(--sf-blue); border-radius: var(--radius-lg); padding: 1.4rem; box-shadow: var(--shadow-sm); text-decoration: none; color: inherit; transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease; }
+.card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-left-color: var(--sf-blue-deep); }
+.card-step { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gavel); margin-bottom: 0.35rem; }
+.card-title { font-size: 1.12rem; font-weight: 700; color: var(--sf-blue-deep); margin-bottom: 0.4rem; }
+.card-desc { font-size: 0.9rem; color: var(--text-muted); flex-grow: 1; }
+.card-cta { margin-top: 1rem; font-size: 0.85rem; font-weight: 600; color: var(--sf-blue-deep); }
+.card-cta .arrow { transition: transform 0.15s ease; display: inline-block; }
+.card:hover .card-cta .arrow { transform: translateX(4px); }
+.flow { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin: 1.25rem 0; }
+.flow .step { background: var(--sf-blue-pale); border: 1px solid var(--sf-blue); color: var(--sf-blue-deep); border-radius: 20px; padding: 0.3rem 0.85rem; font-size: 0.82rem; font-weight: 700; }
+.flow .arrow { color: var(--border-strong); font-weight: 700; }
+.site-footer { background: var(--sf-blue-darker); color: rgba(255,255,255,0.75); padding: 1.25rem 0; margin-top: 3rem; font-size: 0.875rem; text-align: center; }
+.site-footer strong { color: var(--sf-cyan); }
+.site-footer a { color: var(--sf-cyan); }
+@media (max-width: 700px) { h1 { font-size: 1.7rem; } .container { padding: 0 1rem; } }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <div class="brand">
+      <span class="brand-mark">&#10052;</span>
+      <span class="brand-text">Snowflake <span class="divider">|</span> Cortex Agents &amp; dbt</span>
+    </div>
+    <div class="meta">
+      <div class="meta-row"><span class="meta-label">Talk</span> Beyond a Reasonable dbt</div>
+      <div class="meta-row"><span class="meta-label">Section</span> The Proceedings</div>
+    </div>
+  </div>
+</header>
+
+<nav class="topnav">
+  <div class="container">
+    <a href="index.html">The Case</a>
+    <span class="sep">|</span>
+    <span class="cur">The Proceedings</span>
+    <span class="sep">|</span>
+    <a href="semantic-views.html">Exhibit A</a>
+    <span class="sep">|</span>
+    <a href="agents.html">Exhibit B</a>
+    <span class="sep">|</span>
+    <a href="evaluations.html">Exhibit C</a>
+  </div>
+</nav>
+
+<nav class="tabbar">
+  <div class="container">
+    <a class="tab" href="wt-setup.html">1 &middot; Setup</a>
+    <a class="tab" href="wt-semantic-view.html">2 &middot; Semantic View</a>
+    <a class="tab" href="wt-agent.html">3 &middot; The Agent</a>
+    <a class="tab" href="wt-evaluation.html">4 &middot; Evaluation</a>
+    <a class="tab" href="wt-ship.html">5 &middot; Ship &amp; Automate</a>
+  </div>
+</nav>
+
+<main class="container">
+  <h1>Building the Agent, Phase by Phase</h1>
+  <p class="lead">Five phases take you from a list of business questions to a shipped, evaluated agent. Every object is built by the same dbt project. Each phase states what you decide, which files change, and the exact command to run live.</p>
+
+  <div class="flow">
+    <span class="step">1 &middot; Setup</span><span class="arrow">&rarr;</span>
+    <span class="step">2 &middot; Semantic View</span><span class="arrow">&rarr;</span>
+    <span class="step">3 &middot; The Agent</span><span class="arrow">&rarr;</span>
+    <span class="step">4 &middot; Evaluation</span><span class="arrow">&rarr;</span>
+    <span class="step">5 &middot; Ship</span>
+  </div>
+
+  <div class="note"><strong>The contract:</strong> before each phase, decide whether to <em>infer</em> values from your data or <em>specify</em> them. At the end of each build phase, run the materialize command and confirm success. Never advance past a failing gate.</div>
+
+  <h2>Pick a section</h2>
+  <div class="card-grid">
+    <a class="card" href="wt-setup.html">
+      <div class="card-step">Step 1</div>
+      <div class="card-title">Setup &amp; Environment</div>
+      <div class="card-desc">Prerequisites, the one-codebase / three-environments model, run-time target resolution, and Phase 0 orientation.</div>
+      <div class="card-cta">Open <span class="arrow">&rarr;</span></div>
+    </a>
+    <a class="card" href="wt-semantic-view.html">
+      <div class="card-step">Step 2</div>
+      <div class="card-title">Semantic View</div>
+      <div class="card-desc">Phase 1: turn ~10 business questions into a semantic view with the enforced clause order. Links to Exhibit A.</div>
+      <div class="card-cta">Open <span class="arrow">&rarr;</span></div>
+    </a>
+    <a class="card" href="wt-agent.html">
+      <div class="card-step">Step 3</div>
+      <div class="card-title">The Agent</div>
+      <div class="card-desc">Phases 2 to 4: orchestration, response, and tool descriptions in one spec; the agent is created at the end. Links to Exhibit B.</div>
+      <div class="card-cta">Open <span class="arrow">&rarr;</span></div>
+    </a>
+    <a class="card" href="wt-evaluation.html">
+      <div class="card-step">Step 4</div>
+      <div class="card-title">Evaluation</div>
+      <div class="card-desc">Phase 5: the verdict. Metrics, AC and TEA tracks, and the commands to run the evaluation and read scores.</div>
+      <div class="card-cta">Open <span class="arrow">&rarr;</span></div>
+    </a>
+    <a class="card" href="wt-ship.html">
+      <div class="card-step">Step 5</div>
+      <div class="card-title">Ship &amp; Automate</div>
+      <div class="card-desc">Closing arguments: promote to prod, ship to users, automate with CI/CD and Snowflake Tasks, plus the CLI path and troubleshooting.</div>
+      <div class="card-cta">Open <span class="arrow">&rarr;</span></div>
+    </a>
+  </div>
+
+  <p class="muted">New here? Start with <a href="wt-setup.html">Setup</a> and use <strong>Next</strong> at the bottom of each page to move through in order, or jump around with the tabs above.</p>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>Beyond a Reasonable dbt &middot; <strong>Snowflake | Cortex Agents &amp; dbt</strong> &middot; <a href="index.html">Back to The Case</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
