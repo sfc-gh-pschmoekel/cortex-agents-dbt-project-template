@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="snowflake-source" content="cortex-agent-authored" />
+<title>The Proceedings, 2: Semantic View (Phase 1)</title>
+<script type="application/json" id="snowflake-report-metadata">
+{
+  "generated": "2026-07-27",
+  "intent": "Walkthrough section 2 of 5 for 'Beyond a Reasonable dbt': Phase 1, turning business questions into a semantic view with the enforced clause order. Links to Exhibit A for the deep dive.",
+  "sources": [
+    { "type": "file", "path": "_github/cortex-agents-dbt-project-template/WORKING-SESSION.md" }
+  ]
+}
+</script>
+<style>
+:root {
+  --sf-blue: #29B5E8;
+  --sf-blue-deep: #11567F;
+  --sf-blue-darker: #0A3D5A;
+  --sf-cyan: #71D3DC;
+  --sf-blue-pale: #E8F6FC;
+  --gavel: #B07A2A;
+  --gavel-deep: #8A5E1F;
+  --gavel-pale: #FBF4E6;
+  --bg: #FFFFFF;
+  --bg-alt: #F7F9FB;
+  --text: #1E1E1E;
+  --text-muted: #5A6872;
+  --border: #E5EAF0;
+  --border-strong: #CFD7E0;
+  --success: #2E7D32;
+  --warning: #E65100;
+  --radius: 6px;
+  --radius-lg: 10px;
+  --shadow-sm: 0 1px 2px rgba(17, 86, 127, 0.06);
+  --shadow-md: 0 4px 12px rgba(17, 86, 127, 0.08);
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "SF Mono", Menlo, Consolas, "Courier New", monospace;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--font-sans); font-size: 16px; line-height: 1.6; color: var(--text); background: var(--bg-alt); -webkit-font-smoothing: antialiased; }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+.site-header { background: linear-gradient(135deg, var(--sf-blue-deep) 0%, var(--sf-blue-darker) 100%); color: white; padding: 2rem 0; border-bottom: 3px solid var(--sf-blue); }
+.brand { display: flex; align-items: center; gap: 0.5rem; font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; }
+.brand-mark { font-size: 1.4rem; }
+.brand-text .divider { color: var(--sf-cyan); margin: 0 0.5rem; font-weight: 300; }
+.meta { display: flex; flex-wrap: wrap; gap: 0.25rem 2rem; font-size: 0.875rem; color: rgba(255,255,255,0.85); }
+.meta-label { color: var(--sf-cyan); font-weight: 600; margin-right: 0.5rem; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; }
+.topnav { background: var(--bg); border-bottom: 1px solid var(--border); padding: 0.6rem 0; font-size: 0.85rem; }
+.topnav a { color: var(--sf-blue-deep); text-decoration: none; font-weight: 600; }
+.topnav a:hover { text-decoration: underline; }
+.topnav .sep { color: var(--border-strong); margin: 0 0.55rem; }
+.topnav .cur { color: var(--text-muted); font-weight: 700; }
+.tabbar { background: var(--bg); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 20; box-shadow: var(--shadow-sm); }
+.tabbar .container { display: flex; flex-wrap: wrap; gap: 0.15rem; }
+.tab { display: inline-block; padding: 0.7rem 0.9rem; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-decoration: none; border-bottom: 3px solid transparent; white-space: nowrap; }
+.tab:hover { color: var(--sf-blue-deep); background: var(--bg-alt); }
+.tab.active { color: var(--sf-blue-deep); border-bottom-color: var(--sf-blue); }
+main { padding: 2.25rem 0 4rem; }
+.eyebrow { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gavel); margin-bottom: 0.5rem; }
+h1 { font-size: 2.15rem; font-weight: 700; color: var(--sf-blue-deep); margin: 0 0 0.5rem; letter-spacing: -0.02em; }
+h2 { font-size: 1.3rem; font-weight: 600; color: var(--sf-blue-deep); margin: 2.75rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--border); scroll-margin-top: 4rem; }
+h3 { font-size: 1.05rem; color: var(--sf-blue-deep); margin: 1.5rem 0 0.5rem; }
+.lead { font-size: 1.12rem; color: var(--text-muted); margin: 0 0 1rem; max-width: 70ch; }
+p { margin: 0.75rem 0; }
+.muted { color: var(--text-muted); }
+a.inline { color: var(--sf-blue-deep); font-weight: 600; }
+code { font-family: var(--font-mono); font-size: 0.85em; background: var(--sf-blue-pale); color: var(--sf-blue-deep); padding: 0.1em 0.4em; border-radius: 4px; }
+pre { background: #0A3D5A; color: #E8F6FC; border-radius: var(--radius); padding: 1rem 1.15rem; overflow-x: auto; font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.5; margin: 0.75rem 0; }
+pre code { background: none; color: inherit; padding: 0; }
+pre .cmt { color: #71D3DC; }
+table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: 0.92rem; background: var(--bg); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm); }
+th, td { border: 1px solid var(--border); padding: 0.55rem 0.75rem; text-align: left; vertical-align: top; }
+th { background: var(--sf-blue-pale); color: var(--sf-blue-deep); font-weight: 700; }
+tbody tr:nth-child(even) { background: var(--bg-alt); }
+.phase { background: var(--bg); border: 1px solid var(--border); border-left: 4px solid var(--sf-blue); border-radius: var(--radius-lg); padding: 1.5rem; margin: 1.25rem 0; box-shadow: var(--shadow-sm); scroll-margin-top: 4rem; }
+.phase-head { display: flex; align-items: baseline; gap: 0.75rem; margin-bottom: 0.25rem; }
+.phase-num { display: inline-flex; align-items: center; justify-content: center; min-width: 2rem; height: 2rem; border-radius: 50%; background: var(--sf-blue-deep); color: #fff; font-weight: 700; font-size: 0.95rem; padding: 0 0.4rem; }
+.phase-title { font-size: 1.2rem; font-weight: 700; color: var(--sf-blue-deep); margin: 0; }
+.phase-goal { font-size: 0.95rem; color: var(--text-muted); margin: 0.15rem 0 0.75rem; }
+.decide { font-size: 0.9rem; background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.6rem 0.9rem; margin: 0.75rem 0; }
+.decide .lbl { font-weight: 700; color: var(--gavel-deep); text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; }
+.demo { border: 1px solid #A5D6A7; border-left: 5px solid var(--success); background: #F1F8F4; border-radius: var(--radius); padding: 0.9rem 1.1rem; margin: 1rem 0; }
+.demo .demo-lbl { display: inline-block; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; background: var(--success); border-radius: 4px; padding: 0.15em 0.55em; margin-bottom: 0.5rem; }
+.demo p { margin: 0.3rem 0 0.5rem; font-size: 0.9rem; color: #244a28; }
+.demo pre { margin: 0.4rem 0 0; }
+.note { border-left: 4px solid var(--sf-blue); background: var(--sf-blue-pale); padding: 0.7rem 1rem; border-radius: var(--radius); margin: 1rem 0; font-size: 0.9rem; color: var(--sf-blue-darker); }
+.note strong { color: var(--sf-blue-deep); }
+.pager { display: flex; justify-content: space-between; gap: 1rem; margin: 3rem 0 0; }
+.pager a { flex: 1 1 0; text-decoration: none; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 0.9rem 1.1rem; color: var(--sf-blue-deep); background: var(--bg); box-shadow: var(--shadow-sm); transition: transform 0.15s ease, box-shadow 0.15s ease; }
+.pager a:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.pager .spacer { flex: 1 1 0; }
+.pager .nxt { text-align: right; }
+.pager .dir { display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); font-weight: 700; margin-bottom: 0.15rem; }
+.pager .ttl { font-weight: 700; }
+.site-footer { background: var(--sf-blue-darker); color: rgba(255,255,255,0.75); padding: 1.25rem 0; margin-top: 3rem; font-size: 0.875rem; text-align: center; }
+.site-footer strong { color: var(--sf-cyan); }
+.site-footer a { color: var(--sf-cyan); }
+@media (max-width: 700px) { h1 { font-size: 1.7rem; } .container { padding: 0 1rem; } .pager { flex-direction: column; } .pager .spacer { display: none; } }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <div class="brand">
+      <span class="brand-mark">&#10052;</span>
+      <span class="brand-text">Snowflake <span class="divider">|</span> Cortex Agents &amp; dbt</span>
+    </div>
+    <div class="meta">
+      <div class="meta-row"><span class="meta-label">Talk</span> Beyond a Reasonable dbt</div>
+      <div class="meta-row"><span class="meta-label">Section</span> The Proceedings / Semantic View</div>
+    </div>
+  </div>
+</header>
+
+<nav class="topnav">
+  <div class="container">
+    <a href="index.html">The Case</a>
+    <span class="sep">|</span>
+    <span class="cur">The Proceedings</span>
+    <span class="sep">|</span>
+    <a href="semantic-views.html">Exhibit A</a>
+    <span class="sep">|</span>
+    <a href="agents.html">Exhibit B</a>
+    <span class="sep">|</span>
+    <a href="evaluations.html">Exhibit C</a>
+  </div>
+</nav>
+
+<nav class="tabbar">
+  <div class="container">
+    <a class="tab" href="wt-setup.html">1 &middot; Setup</a>
+    <a class="tab active" href="wt-semantic-view.html">2 &middot; Semantic View</a>
+    <a class="tab" href="wt-agent.html">3 &middot; The Agent</a>
+    <a class="tab" href="wt-evaluation.html">4 &middot; Evaluation</a>
+    <a class="tab" href="wt-ship.html">5 &middot; Ship &amp; Automate</a>
+  </div>
+</nav>
+
+<main class="container">
+  <div class="eyebrow">Step 2 of 5</div>
+  <h1>Business Questions to a Semantic View</h1>
+  <p class="lead">Capture the questions the agent must answer, then model the data to support them. The semantic view is the accuracy engine, so this is where the build really begins.</p>
+
+  <!-- PHASE 1 -->
+  <div class="phase" id="phase-1">
+    <div class="phase-head"><span class="phase-num">1</span><h3 class="phase-title">Business Questions &rarr; Semantic View</h3></div>
+    <p class="phase-goal">Capture the ~10 questions the agent must answer, then model the data to support them.</p>
+    <p>Edit <code>models/sources.yml</code>, optional <code>models/staging/stg_*.sql</code>, and the semantic view <code>models/semantic_views/sv_&lt;name&gt;.sql</code>. Author the clauses in this <strong>enforced order</strong>:</p>
+    <pre><code>TABLES &rarr; RELATIONSHIPS &rarr; FACTS &rarr; DIMENSIONS &rarr; METRICS &rarr; COMMENT
+      &rarr; AI_SQL_GENERATION &rarr; AI_QUESTION_CATEGORIZATION &rarr; AI_VERIFIED_QUERIES</code></pre>
+    <p>The two <code>AI_*</code> clauses are optional and additive: how the agent writes SQL, and what to do with a question before SQL is attempted. <a class="inline" href="semantic-views.html">See Exhibit A for the deep dive &rarr;</a></p>
+    <div class="decide"><span class="lbl">Gate</span> &nbsp;Infer dimensions/metrics and the AI_* rules from your sources, or specify them?</div>
+    <div class="demo">
+      <span class="demo-lbl">Demo &middot; materialize</span>
+      <p>Build the semantic view and confirm a sample <code>SELECT ... FROM SEMANTIC_VIEW(...)</code> returns rows.</p>
+      <pre><code>dbt build --select sv_&lt;name&gt;</code></pre>
+    </div>
+  </div>
+
+  <div class="note"><strong>Why this matters:</strong> the semantic view is where Cortex Analyst gets its accuracy. Business names, curated synonyms, verified queries, and the two <code>AI_*</code> clauses all live here. <a class="inline" href="semantic-views.html">Exhibit A</a> covers the high-leverage practices in full.</div>
+
+  <nav class="pager">
+    <a class="prv" href="wt-setup.html"><span class="dir">&larr; Previous</span><span class="ttl">1 &middot; Setup</span></a>
+    <a class="nxt" href="wt-agent.html"><span class="dir">Next &rarr;</span><span class="ttl">3 &middot; The Agent</span></a>
+  </nav>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>Beyond a Reasonable dbt &middot; <strong>Snowflake | Cortex Agents &amp; dbt</strong> &middot; <a href="walkthrough.html">Proceedings overview</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

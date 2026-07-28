@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="snowflake-source" content="cortex-agent-authored" />
+<title>Beyond a Reasonable dbt: Executive Briefing</title>
+<script type="application/json" id="snowflake-report-metadata">
+{
+  "generated": "2026-07-27",
+  "intent": "Executive slide deck (VP/Director of Data altitude) for 'Beyond a Reasonable dbt: Trustworthy Pipelines for AI Agents'. Single self-contained HTML file with an inline dependency-free slide engine (keyboard + button nav, progress bar, slide numbers, jump-to agenda, URL-hash sync, print-to-PDF). Companion to the technical deep-dive doc-site in the same folder (index.html).",
+  "sources": [
+    { "type": "file", "path": "_github/cortex-agents-dbt-project-template/README.md" },
+    { "type": "file", "path": "_github/cortex-agents-dbt-project-template/WORKING-SESSION.md" },
+    { "type": "file", "path": "_github/cortex-agents-dbt-project-template/presentations/index.html" }
+  ],
+  "slides": [
+    { "n": 1, "title": "Title" },
+    { "n": 2, "title": "The Docket (agenda)" },
+    { "n": 3, "title": "The Shift" },
+    { "n": 4, "title": "The Case (the risk)" },
+    { "n": 5, "title": "The Reframe (thesis)" },
+    { "n": 6, "title": "The Payoff (4 pillars)" },
+    { "n": 7, "title": "The Evidence (lifecycle)" },
+    { "n": 8, "title": "The Verdict (measurable trust)" },
+    { "n": 9, "title": "The Standing Order (dev to prod)" },
+    { "n": 10, "title": "Closing Arguments (ship anywhere)" },
+    { "n": 11, "title": "The Ruling (bottom line + CTA)" }
+  ]
+}
+</script>
+<style>
+:root {
+  --sf-blue: #29B5E8;
+  --sf-blue-deep: #11567F;
+  --sf-blue-darker: #0A3D5A;
+  --sf-cyan: #71D3DC;
+  --sf-blue-pale: #E8F6FC;
+  --gavel: #B07A2A;
+  --gavel-deep: #8A5E1F;
+  --gavel-pale: #FBF4E6;
+  --bg: #FFFFFF;
+  --bg-alt: #F7F9FB;
+  --text: #1E2A33;
+  --text-muted: #5A6872;
+  --border: #E5EAF0;
+  --border-strong: #CFD7E0;
+  --success: #2E7D32;
+  --warning: #E65100;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "SF Mono", Menlo, Consolas, "Courier New", monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body {
+  font-family: var(--font-sans);
+  color: var(--text);
+  background: #0A3D5A;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Deck viewport */
+.deck { position: fixed; inset: 0; }
+.slide {
+  position: absolute; inset: 0;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  padding: 7vh 8vw 9vh;
+  background: var(--bg);
+  animation: fade 0.35s ease;
+}
+.slide.active { display: flex; }
+@keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* Hero (dark) slides */
+.slide.hero {
+  background: linear-gradient(135deg, var(--sf-blue-deep) 0%, var(--sf-blue-darker) 100%);
+  color: #fff;
+}
+.slide.hero .eyebrow { color: var(--sf-cyan); }
+.slide.hero h1, .slide.hero h2 { color: #fff; }
+.slide.hero .lead { color: rgba(255,255,255,0.88); }
+
+/* Shared slide typography */
+.eyebrow {
+  font-size: clamp(0.7rem, 1.5vh, 0.95rem);
+  font-weight: 800; text-transform: uppercase; letter-spacing: 0.14em;
+  color: var(--gavel); margin-bottom: 1.2vh;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.eyebrow::before { content: "\00A7"; font-size: 1.1em; opacity: 0.7; }
+h1 { font-size: clamp(2.2rem, 7vh, 5rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.02; margin: 0 0 1.5vh; color: var(--sf-blue-deep); }
+h1 .pun { color: var(--sf-blue); }
+h2 { font-size: clamp(1.8rem, 5.2vh, 3.4rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.08; margin: 0 0 2vh; color: var(--sf-blue-deep); }
+.lead { font-size: clamp(1.05rem, 2.6vh, 1.7rem); color: var(--text-muted); max-width: 34ch; line-height: 1.45; margin: 0; }
+.slide.wide .lead { max-width: 48ch; }
+.kicker { font-size: clamp(1rem, 2.4vh, 1.5rem); color: var(--text-muted); margin-top: 2.5vh; max-width: 46ch; line-height: 1.4; }
+
+/* Title slide */
+.title-brand { display: flex; align-items: center; gap: 0.6rem; font-size: clamp(1rem, 2.3vh, 1.4rem); font-weight: 600; margin-bottom: 4vh; color: #fff; }
+.title-brand .divider { color: var(--sf-cyan); margin: 0 0.4rem; font-weight: 300; }
+.title-sub { font-size: clamp(1.1rem, 3vh, 2rem); color: var(--sf-cyan); font-weight: 500; margin-top: 1vh; }
+.title-foot { position: absolute; bottom: 6vh; left: 8vw; right: 8vw; font-size: clamp(0.75rem, 1.6vh, 1rem); color: rgba(255,255,255,0.7); display: flex; justify-content: space-between; }
+
+/* Agenda */
+.agenda { list-style: none; padding: 0; margin: 2vh 0 0; display: flex; flex-direction: column; gap: 1.4vh; }
+.agenda li { display: flex; align-items: baseline; gap: 1rem; font-size: clamp(1.05rem, 3vh, 1.9rem); font-weight: 600; color: #fff; cursor: pointer; padding: 0.4vh 0; border-radius: 6px; transition: color 0.15s ease, transform 0.15s ease; }
+.agenda li:hover { color: var(--sf-cyan); transform: translateX(6px); }
+.agenda .num { color: var(--sf-cyan); font-variant-numeric: tabular-nums; font-weight: 800; min-width: 1.6em; }
+.agenda .hint { font-size: clamp(0.8rem, 1.7vh, 1.05rem); font-weight: 400; color: rgba(255,255,255,0.6); margin-left: 0.4rem; }
+
+/* Contrast (problem vs fix) */
+.contrast { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5vw; margin-top: 3vh; }
+.contrast .col { border-radius: 14px; padding: 3vh 2.2vw; box-shadow: 0 6px 20px rgba(17,86,127,0.08); }
+.contrast .problem { background: #FFF6F0; border: 1px solid #F3C7A6; border-top: 6px solid var(--warning); }
+.contrast .fix { background: #F1F8F4; border: 1px solid #B6Dcc0; border-top: 6px solid var(--success); }
+.contrast h3 { margin: 0 0 1.5vh; font-size: clamp(1.05rem, 2.6vh, 1.6rem); }
+.contrast .problem h3 { color: var(--warning); }
+.contrast .fix h3 { color: var(--success); }
+.contrast ul { margin: 0; padding-left: 1.2em; }
+.contrast li { font-size: clamp(0.95rem, 2.2vh, 1.35rem); margin: 1vh 0; color: var(--text); }
+
+/* Pillars */
+.pillars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.6vw; margin-top: 3.5vh; }
+.pillar { background: var(--bg-alt); border: 1px solid var(--border); border-top: 5px solid var(--sf-blue); border-radius: 14px; padding: 3vh 1.4vw; }
+.pillar .pnum { font-size: clamp(1.4rem, 4vh, 2.6rem); font-weight: 800; color: var(--sf-blue); line-height: 1; }
+.pillar h3 { margin: 1.5vh 0 0.8vh; font-size: clamp(1rem, 2.4vh, 1.45rem); color: var(--sf-blue-deep); }
+.pillar p { margin: 0; font-size: clamp(0.85rem, 1.9vh, 1.15rem); color: var(--text-muted); line-height: 1.35; }
+
+/* Big-stat layout */
+.statrow { display: flex; align-items: center; gap: 4vw; margin-top: 2vh; flex-wrap: wrap; }
+.bigstat { font-size: clamp(4rem, 18vh, 13rem); font-weight: 800; color: var(--gavel); line-height: 0.9; letter-spacing: -0.03em; }
+.bigstat .unit { font-size: 0.4em; color: var(--gavel-deep); }
+.statcopy { flex: 1 1 20ch; }
+.statcopy h2 { margin-top: 0; }
+
+/* Lifecycle SVG frame */
+.svg-frame { margin-top: 3vh; width: 100%; }
+.svg-frame svg { display: block; width: 100%; height: auto; max-height: 46vh; }
+.svg-cap { text-align: center; color: var(--text-muted); font-size: clamp(0.85rem, 1.8vh, 1.1rem); margin-top: 2vh; }
+
+/* Ship channels */
+.channels { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.6vw; margin-top: 4vh; }
+.channel { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 14px; padding: 3.5vh 1.2vw; text-align: center; }
+.channel .ico { font-size: clamp(1.6rem, 5vh, 3rem); line-height: 1; }
+.channel h3 { margin: 1.5vh 0 0.5vh; font-size: clamp(0.95rem, 2.3vh, 1.35rem); color: var(--sf-blue-deep); }
+.channel p { margin: 0; font-size: clamp(0.78rem, 1.7vh, 1.05rem); color: var(--text-muted); }
+
+/* Ruling / CTA list */
+.ruling-points { list-style: none; padding: 0; margin: 2.5vh 0 0; display: flex; flex-direction: column; gap: 1.6vh; }
+.ruling-points li { font-size: clamp(1.05rem, 2.8vh, 1.8rem); color: rgba(255,255,255,0.92); display: flex; gap: 0.9rem; align-items: baseline; }
+.ruling-points .mark { color: var(--sf-cyan); font-weight: 800; }
+.ruling-cta { margin-top: 4vh; font-size: clamp(0.9rem, 2vh, 1.25rem); color: rgba(255,255,255,0.75); }
+.ruling-cta code { font-family: var(--font-mono); background: rgba(255,255,255,0.12); color: #fff; padding: 0.15em 0.5em; border-radius: 5px; }
+
+/* Chrome: progress bar, counter, nav buttons */
+.progress { position: fixed; top: 0; left: 0; height: 5px; background: var(--sf-blue); width: 0; transition: width 0.3s ease; z-index: 30; }
+.counter { position: fixed; bottom: 3vh; right: 3vw; font-size: clamp(0.8rem, 1.7vh, 1.05rem); font-weight: 700; color: var(--text-muted); font-variant-numeric: tabular-nums; z-index: 30; background: rgba(255,255,255,0.65); padding: 0.2em 0.7em; border-radius: 20px; }
+.slide.hero ~ .counter { color: #fff; }
+.navbtns { position: fixed; bottom: 3vh; left: 3vw; display: flex; gap: 0.6rem; z-index: 30; }
+.navbtn { width: 2.6rem; height: 2.6rem; border-radius: 50%; border: 1px solid var(--border-strong); background: rgba(255,255,255,0.85); color: var(--sf-blue-deep); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s ease, transform 0.15s ease; box-shadow: 0 2px 8px rgba(17,86,127,0.12); }
+.navbtn:hover { background: #fff; transform: translateY(-2px); }
+.navbtn:active { transform: translateY(0); }
+.hint-help { position: fixed; bottom: 3vh; left: 50%; transform: translateX(-50%); font-size: clamp(0.68rem, 1.4vh, 0.9rem); color: var(--text-muted); z-index: 30; opacity: 0.7; }
+
+@media (max-width: 820px) {
+  .contrast, .pillars, .channels { grid-template-columns: 1fr; }
+  .slide { padding: 6vh 7vw 10vh; }
+}
+
+/* Print: one slide per page for PDF export */
+@media print {
+  body { overflow: visible; background: #fff; }
+  .deck { position: static; }
+  .slide { position: relative; display: flex !important; inset: auto; height: 100vh; page-break-after: always; box-shadow: none; animation: none; }
+  .progress, .counter, .navbtns, .hint-help { display: none !important; }
+  .agenda li { cursor: default; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="deck" id="deck">
+
+  <!-- 1. TITLE -->
+  <section class="slide hero active">
+    <div class="title-brand"><span>&#10052;</span><span>Snowflake <span class="divider">|</span> Cortex Agents &amp; dbt</span></div>
+    <div class="eyebrow">Opening statement</div>
+    <h1>Beyond a Reasonable <span class="pun">dbt</span></h1>
+    <div class="title-sub">Trustworthy pipelines for AI agents</div>
+    <div class="title-foot">
+      <span>Executive briefing</span>
+      <span>Managing the Cortex Agent lifecycle as code</span>
+    </div>
+  </section>
+
+  <!-- 2. AGENDA -->
+  <section class="slide hero wide">
+    <div class="eyebrow">The docket</div>
+    <h2>What we'll cover</h2>
+    <ul class="agenda">
+      <li data-goto="3"><span class="num">01</span><span>The shift<span class="hint">: agents are the new front door to data</span></span></li>
+      <li data-goto="4"><span class="num">02</span><span>The risk<span class="hint">: why most agents can't be trusted</span></span></li>
+      <li data-goto="5"><span class="num">03</span><span>The reframe<span class="hint">: treat agents like production software</span></span></li>
+      <li data-goto="7"><span class="num">04</span><span>How it works<span class="hint">: one project, the whole lifecycle</span></span></li>
+      <li data-goto="8"><span class="num">05</span><span>The payoff<span class="hint">: measurable trust, governed delivery</span></span></li>
+    </ul>
+  </section>
+
+  <!-- 3. THE SHIFT -->
+  <section class="slide wide">
+    <div class="eyebrow">The shift</div>
+    <h2>Every team wants an AI agent</h2>
+    <p class="lead">Conversational agents are becoming the front door to enterprise data. Business users ask questions in plain language and expect a trustworthy answer, without writing SQL or waiting on a report.</p>
+    <p class="kicker">The demand is real and accelerating. The question is no longer <em>whether</em> you'll build agents; it's whether you can trust the ones you ship.</p>
+  </section>
+
+  <!-- 4. THE CASE (risk) -->
+  <section class="slide">
+    <div class="eyebrow">The case</div>
+    <h2>But most agents are built by click-ops</h2>
+    <div class="contrast">
+      <div class="col problem">
+        <h3>The charge</h3>
+        <ul>
+          <li>Assembled by hand in a UI</li>
+          <li>No version control or history</li>
+          <li>No peer review before production</li>
+          <li>No tests: accuracy is a vibe</li>
+          <li>Dev and prod quietly drift apart</li>
+        </ul>
+      </div>
+      <div class="col fix">
+        <h3>The consequence</h3>
+        <ul>
+          <li>Wrong answers, no way to diff or roll back</li>
+          <li>One person holds the whole thing</li>
+          <li>Every environment rebuilt by hand</li>
+          <li>Trust erodes on the first bad answer</li>
+          <li>Adoption stalls</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. THE REFRAME -->
+  <section class="slide wide">
+    <div class="eyebrow">The reframe</div>
+    <h2>Treat AI agents like production software</h2>
+    <p class="lead">An agent is only as trustworthy as the process behind it. So manage the <strong>entire lifecycle as code</strong> (the data model, the agent, its tests, and its schedule) natively on Snowflake, with dbt.</p>
+    <p class="kicker">Same discipline you already apply to the rest of your data platform: version it, review it, test it, promote it.</p>
+  </section>
+
+  <!-- 6. THE PAYOFF -->
+  <section class="slide wide">
+    <div class="eyebrow">The payoff</div>
+    <h2>What "as code" delivers</h2>
+    <div class="pillars">
+      <div class="pillar"><div class="pnum">1</div><h3>Versioned &amp; reviewed</h3><p>Every change is in Git, diffed, and approved in a pull request before it reaches users.</p></div>
+      <div class="pillar"><div class="pnum">2</div><h3>Measurable trust</h3><p>Evaluations score the agent against known answers; ship only when it clears the bar.</p></div>
+      <div class="pillar"><div class="pnum">3</div><h3>One codebase</h3><p>The same code targets dev, staging, and prod. No rebuilding by hand per environment.</p></div>
+      <div class="pillar"><div class="pnum">4</div><h3>Ship anywhere</h3><p>Deliver the same governed agent to Snowflake Intelligence, Teams, an API, or MCP.</p></div>
+    </div>
+  </section>
+
+  <!-- 7. THE EVIDENCE (lifecycle) -->
+  <section class="slide wide">
+    <div class="eyebrow">The evidence</div>
+    <h2>One project builds all of it</h2>
+    <div class="svg-frame">
+      <svg viewBox="0 0 1000 210" role="img" aria-label="Lifecycle: Sources to Staging to Semantic View to Agent to Evaluation to Ship, with a feedback loop from Evaluation back to Semantic View.">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#11567F"></path></marker>
+          <marker id="arrl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#B07A2A"></path></marker>
+        </defs>
+        <g font-family="-apple-system, Segoe UI, sans-serif" font-size="15" text-anchor="middle">
+          <g><rect x="6" y="58" width="150" height="62" rx="9" fill="#E8F6FC" stroke="#29B5E8" stroke-width="1.5"></rect><text x="81" y="85" font-weight="700" fill="#11567F">Data Sources</text><text x="81" y="106" font-size="12" fill="#5A6872">your tables</text></g>
+          <g><rect x="188" y="58" width="150" height="62" rx="9" fill="#E8F6FC" stroke="#29B5E8" stroke-width="1.5"></rect><text x="263" y="85" font-weight="700" fill="#11567F">Semantic Model</text><text x="263" y="106" font-size="12" fill="#5A6872">business meaning</text></g>
+          <g><rect x="370" y="58" width="150" height="62" rx="9" fill="#D9EEF9" stroke="#11567F" stroke-width="2"></rect><text x="445" y="85" font-weight="700" fill="#11567F">The Agent</text><text x="445" y="106" font-size="12" fill="#5A6872">answers questions</text></g>
+          <g><rect x="552" y="58" width="150" height="62" rx="9" fill="#FBF4E6" stroke="#B07A2A" stroke-width="2"></rect><text x="627" y="85" font-weight="700" fill="#8A5E1F">Evaluation</text><text x="627" y="106" font-size="12" fill="#5A6872">the verdict</text></g>
+          <g><rect x="734" y="58" width="150" height="62" rx="9" fill="#F1F8F4" stroke="#2E7D32" stroke-width="1.5"></rect><text x="809" y="85" font-weight="700" fill="#2E7D32">Ship</text><text x="809" y="106" font-size="12" fill="#5A6872">to your users</text></g>
+        </g>
+        <g stroke="#11567F" stroke-width="2.5" fill="none">
+          <line x1="158" y1="89" x2="186" y2="89" marker-end="url(#arr)"></line>
+          <line x1="340" y1="89" x2="368" y2="89" marker-end="url(#arr)"></line>
+          <line x1="522" y1="89" x2="550" y2="89" marker-end="url(#arr)"></line>
+          <line x1="704" y1="89" x2="732" y2="89" marker-end="url(#arr)"></line>
+        </g>
+        <path d="M627 122 C 627 185, 445 185, 445 124" stroke="#B07A2A" stroke-width="2.5" fill="none" stroke-dasharray="6 5" marker-end="url(#arrl)"></path>
+        <text x="536" y="205" text-anchor="middle" font-family="-apple-system, Segoe UI, sans-serif" font-size="13" fill="#8A5E1F">measure &rarr; improve &rarr; re-run</text>
+      </svg>
+    </div>
+    <div class="svg-cap">One dbt project on Snowflake builds every box, and the loop is where evaluation scores drive the next improvement.</div>
+  </section>
+
+  <!-- 8. THE VERDICT -->
+  <section class="slide">
+    <div class="eyebrow">The verdict</div>
+    <div class="statrow">
+      <div class="bigstat">&ge;95<span class="unit">%</span></div>
+      <div class="statcopy">
+        <h2>Trust becomes a number</h2>
+        <p class="lead">Before an agent ships, it's scored against a set of known questions and answers. The bar to promote: at least 95% answer correctness. Fall short, fix the right layer, and re-run.</p>
+      </div>
+    </div>
+    <p class="kicker">Accuracy stops being a gut feeling and becomes a metric you can track, compare across versions, and hold the line on.</p>
+  </section>
+
+  <!-- 9. THE STANDING ORDER -->
+  <section class="slide wide">
+    <div class="eyebrow">The standing order</div>
+    <h2>From dev to production, governed</h2>
+    <p class="lead">The same code promotes from a developer's sandbox to production: no hand-rebuilding, no drift. Automated pipelines build and test on every change; scheduled jobs keep it fresh.</p>
+    <div class="pillars" style="grid-template-columns: repeat(3, 1fr); margin-top: 3vh;">
+      <div class="pillar"><h3>Isolated dev</h3><p>Each engineer builds in their own space, so nobody overwrites anyone else.</p></div>
+      <div class="pillar"><h3>Reviewed promotion</h3><p>Changes merge through pull requests; CI builds and tests before prod.</p></div>
+      <div class="pillar"><h3>Always current</h3><p>Scheduled rebuilds and evaluations run automatically, with no manual toil.</p></div>
+    </div>
+  </section>
+
+  <!-- 10. CLOSING ARGUMENTS -->
+  <section class="slide wide">
+    <div class="eyebrow">Closing arguments</div>
+    <h2>Ship it where people already work</h2>
+    <div class="channels">
+      <div class="channel"><div class="ico">&#128172;</div><h3>Snowflake Intelligence</h3><p>Ask-your-data experience</p></div>
+      <div class="channel"><div class="ico">&#128101;</div><h3>Microsoft Teams</h3><p>In the flow of work</p></div>
+      <div class="channel"><div class="ico">&#128268;</div><h3>REST API</h3><p>Embed in your apps</p></div>
+      <div class="channel"><div class="ico">&#129513;</div><h3>MCP</h3><p>Open agent interop</p></div>
+    </div>
+    <p class="kicker">One governed agent, delivered to every surface your users already live in.</p>
+  </section>
+
+  <!-- 11. THE RULING -->
+  <section class="slide hero wide">
+    <div class="eyebrow">The ruling</div>
+    <h2>The bottom line</h2>
+    <ul class="ruling-points">
+      <li><span class="mark">&#10003;</span><span>AI agents are only as trustworthy as the process behind them.</span></li>
+      <li><span class="mark">&#10003;</span><span>Manage the whole lifecycle as code: versioned, reviewed, tested, promoted.</span></li>
+      <li><span class="mark">&#10003;</span><span>Trust becomes measurable; delivery becomes governed and repeatable.</span></li>
+    </ul>
+    <p class="ruling-cta">Ready to go deeper with your team? The full technical walkthrough lives alongside this deck. Open <a href="beyond-a-reasonable-dbt/index.html" style="color:var(--sf-cyan); font-weight:600;"><code>beyond-a-reasonable-dbt/index.html</code></a>.</p>
+  </section>
+
+</div>
+
+<div class="counter" id="counter">1 / 11</div>
+<div class="navbtns">
+  <button class="navbtn" id="prevBtn" aria-label="Previous slide">&#8249;</button>
+  <button class="navbtn" id="nextBtn" aria-label="Next slide">&#8250;</button>
+</div>
+<div class="hint-help">&larr; &rarr; or space to navigate &middot; click a docket item to jump</div>
+
+<script>
+(function () {
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var total = slides.length;
+  var progress = document.getElementById('progress');
+  var counter = document.getElementById('counter');
+  var current = 0;
+
+  function clamp(n) { return Math.max(0, Math.min(total - 1, n)); }
+
+  function show(idx, updateHash) {
+    current = clamp(idx);
+    slides.forEach(function (s, i) { s.classList.toggle('active', i === current); });
+    progress.style.width = ((current + 1) / total * 100) + '%';
+    counter.textContent = (current + 1) + ' / ' + total;
+    // counter contrast on hero slides
+    counter.style.color = slides[current].classList.contains('hero') ? '#fff' : '';
+    counter.style.background = slides[current].classList.contains('hero') ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.65)';
+    if (updateHash !== false) {
+      if (history && history.replaceState) history.replaceState(null, '', '#' + (current + 1));
+      else location.hash = current + 1;
+    }
+  }
+
+  function next() { show(current + 1); }
+  function prev() { show(current - 1); }
+
+  document.addEventListener('keydown', function (e) {
+    switch (e.key) {
+      case 'ArrowRight': case ' ': case 'PageDown': case 'Enter': e.preventDefault(); next(); break;
+      case 'ArrowLeft': case 'PageUp': e.preventDefault(); prev(); break;
+      case 'Home': e.preventDefault(); show(0); break;
+      case 'End': e.preventDefault(); show(total - 1); break;
+    }
+  });
+
+  document.getElementById('nextBtn').addEventListener('click', next);
+  document.getElementById('prevBtn').addEventListener('click', prev);
+
+  // Agenda jump-to
+  document.querySelectorAll('[data-goto]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      var target = parseInt(el.getAttribute('data-goto'), 10);
+      if (!isNaN(target)) show(target - 1);
+    });
+  });
+
+  // Resume from URL hash
+  var start = parseInt((location.hash || '').replace('#', ''), 10);
+  show(isNaN(start) ? 0 : start - 1, false);
+})();
+</script>
+
+</body>
+</html>
