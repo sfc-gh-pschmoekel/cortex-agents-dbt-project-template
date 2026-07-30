@@ -4,11 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="snowflake-source" content="cortex-agent-authored" />
-<title>The Proceedings, 3: The Agent (Phases 2-4)</title>
+<title>The Proceedings, 2: Semantic View (Phase 1)</title>
 <script type="application/json" id="snowflake-report-metadata">
 {
   "generated": "2026-07-27",
-  "intent": "Walkthrough section 3 of 5 for 'Beyond a Reasonable dbt': Phases 2, 3, and 4 (orchestration, response, tools) that all author the same inline agent spec, with the agent created at the end of Phase 4. Links to Exhibit B for the deep dive.",
+  "intent": "Walkthrough section 2 of 5 for 'Beyond a Reasonable dbt': Phase 1, turning business questions into a semantic view with the enforced clause order. Links to Exhibit A for the deep dive.",
   "sources": [
     { "type": "file", "path": "_github/cortex-agents-dbt-project-template/WORKING-SESSION.md" }
   ]
@@ -112,88 +112,67 @@ tbody tr:nth-child(even) { background: var(--bg-alt); }
     </div>
     <div class="meta">
       <div class="meta-row"><span class="meta-label">Talk</span> Beyond a Reasonable dbt</div>
-      <div class="meta-row"><span class="meta-label">Section</span> The Proceedings / The Agent</div>
+      <div class="meta-row"><span class="meta-label">Section</span> The Proceedings / Semantic View</div>
     </div>
   </div>
 </header>
 
 <nav class="topnav">
   <div class="container">
-    <a href="index.html">The Case</a>
+    <a href="../index.html">The Case</a>
     <span class="sep">|</span>
     <span class="cur">The Proceedings</span>
     <span class="sep">|</span>
-    <a href="semantic-views.html">Exhibit A</a>
+    <a href="../semantic-views.html">Exhibit A</a>
     <span class="sep">|</span>
-    <a href="agents.html">Exhibit B</a>
+    <a href="../agents.html">Exhibit B</a>
     <span class="sep">|</span>
-    <a href="evaluations.html">Exhibit C</a>
+    <a href="../evaluations.html">Exhibit C</a>
   </div>
 </nav>
 
 <nav class="tabbar">
   <div class="container">
     <a class="tab" href="wt-setup.html">1 &middot; Setup</a>
-    <a class="tab" href="wt-semantic-view.html">2 &middot; Semantic View</a>
-    <a class="tab active" href="wt-agent.html">3 &middot; The Agent</a>
+    <a class="tab active" href="wt-semantic-view.html">2 &middot; Semantic View</a>
+    <a class="tab" href="wt-agent.html">3 &middot; The Agent</a>
     <a class="tab" href="wt-evaluation.html">4 &middot; Evaluation</a>
     <a class="tab" href="wt-ship.html">5 &middot; Ship &amp; Automate</a>
   </div>
 </nav>
 
 <main class="container">
-  <div class="eyebrow">Step 3 of 5</div>
-  <h1>The Agent: Orchestration, Response, Tools</h1>
-  <p class="lead">Phases 2, 3, and 4 all author the same inline spec, kept in separate layers. The agent object is created once, at the end of Phase 4.</p>
+  <div class="eyebrow">Step 2 of 5</div>
+  <h1>Business Questions to a Semantic View</h1>
+  <p class="lead">Capture the questions the agent must answer, then model the data to support them. The semantic view is the accuracy engine, so this is where the build really begins.</p>
 
-  <div class="note"><strong>One spec, three layers:</strong> Phases 2&ndash;4 all edit the inline <code>spec</code> inside the <code>deploy_&lt;agent&gt;</code> macro in <code>agents/&lt;agent&gt;.sql</code>. Keeping orchestration, response, and tool descriptions separate is the single best way to avoid poor answers. <a class="inline" href="agents.html">Exhibit B</a> is the full deep dive.</div>
-
-  <!-- PHASE 2 -->
-  <div class="phase" id="phase-2">
-    <div class="phase-head"><span class="phase-num">2</span><h3 class="phase-title">Agent Reasoning &rarr; Orchestration</h3></div>
-    <p class="phase-goal">Define how the agent plans and routes between tools, the highest-impact accuracy lever after tool descriptions.</p>
-    <p>Phases 2&ndash;4 all author into the <strong>same place</strong>: the inline <code>spec</code> inside the <code>deploy_&lt;agent&gt;</code> macro in <code>agents/&lt;agent&gt;.sql</code>. The agent object is created once, at the end of Phase 4.</p>
-    <p>Put tool routing, default time windows, multi-step sequencing, conditional logic, and error/empty-result handling in <code>instructions.orchestration</code>. Keep tone and formatting <em>out</em> (that's Phase 3).</p>
-    <div class="decide"><span class="lbl">Gate</span> &nbsp;Infer orchestration logic from your questions and tools, or specify it?</div>
-    <p class="muted"><strong>Materialize:</strong> none yet; continue to Phase 3.</p>
-  </div>
-
-  <!-- PHASE 3 -->
-  <div class="phase" id="phase-3">
-    <div class="phase-head"><span class="phase-num">3</span><h3 class="phase-title">Agent Response &rarr; Response Instructions</h3></div>
-    <p class="phase-goal">Define how the agent formats and communicates answers, separate from tool routing.</p>
-    <p>Put tone, data presentation (tables vs. charts, units), response structure by question type, disclaimers, and error-message style in <code>instructions.response</code>. Add 3+ representative <code>instructions.sample_questions</code>.</p>
-    <div class="note"><strong>Rule of thumb:</strong> if the instruction affects <em>what</em> the agent does or <em>which</em> tool it picks, it's orchestration. If it affects <em>how</em> the output looks, it's response.</div>
-    <div class="decide"><span class="lbl">Gate</span> &nbsp;Infer response style from the use case and audience, or specify it?</div>
-    <p class="muted"><strong>Materialize:</strong> none yet; continue to Phase 4.</p>
-  </div>
-
-  <!-- PHASE 4 -->
-  <div class="phase" id="phase-4">
-    <div class="phase-head"><span class="phase-num">4</span><h3 class="phase-title">Agent Tools &rarr; Tool Descriptions (create the agent)</h3></div>
-    <p class="phase-goal">Wire up tools and their resources, then create the agent. Tool descriptions are the single most critical factor for accuracy.</p>
-    <p>For each tool write the 4-part description: what data it accesses, when to use it, <strong>when NOT to use it</strong>, and input/format guidance. Point the Analyst tool at <code>&lt;&lt;DATABASE&gt;&gt;.&lt;&lt;SCHEMA&gt;&gt;.SV_&lt;NAME&gt;</code> and set <code>execution_environment.warehouse</code> to <code>&lt;&lt;WAREHOUSE&gt;&gt;</code>. <a class="inline" href="agents.html">See Exhibit B for the deep dive &rarr;</a></p>
-    <div class="decide"><span class="lbl">Gate</span> &nbsp;Infer tool descriptions from the semantic view and use case, or specify them?</div>
+  <!-- PHASE 1 -->
+  <div class="phase" id="phase-1">
+    <div class="phase-head"><span class="phase-num">1</span><h3 class="phase-title">Business Questions &rarr; Semantic View</h3></div>
+    <p class="phase-goal">Capture the ~10 questions the agent must answer, then model the data to support them.</p>
+    <p>Edit <code>models/sources.yml</code>, optional <code>models/staging/stg_*.sql</code>, and the semantic view <code>models/semantic_views/sv_&lt;name&gt;.sql</code>. Author the clauses in this <strong>enforced order</strong>:</p>
+    <pre><code>TABLES &rarr; RELATIONSHIPS &rarr; FACTS &rarr; DIMENSIONS &rarr; METRICS &rarr; COMMENT
+      &rarr; AI_SQL_GENERATION &rarr; AI_QUESTION_CATEGORIZATION &rarr; AI_VERIFIED_QUERIES</code></pre>
+    <p>The two <code>AI_*</code> clauses are optional and additive: how the agent writes SQL, and what to do with a question before SQL is attempted. <a class="inline" href="../semantic-views.html">See Exhibit A for the deep dive &rarr;</a></p>
+    <div class="decide"><span class="lbl">Gate</span> &nbsp;Infer dimensions/metrics and the AI_* rules from your sources, or specify them?</div>
     <div class="demo">
-      <span class="demo-lbl">Demo &middot; create the agent</span>
-      <p>The wrapper defines the spec inline and calls <code>create_agent</code> (CREATE OR REPLACE). No <code>--args</code> needed.</p>
-      <pre><code>dbt run-operation deploy_&lt;agent&gt;
-
-<span class="cmt"># Zero-downtime edit to a live agent later:</span>
-dbt run-operation deploy_&lt;agent&gt; --args '{alter: true}'</code></pre>
+      <span class="demo-lbl">Demo &middot; materialize</span>
+      <p>Build the semantic view and confirm a sample <code>SELECT ... FROM SEMANTIC_VIEW(...)</code> returns rows.</p>
+      <pre><code>dbt build --select sv_&lt;name&gt;</code></pre>
     </div>
-    <p class="muted"><strong>Done when:</strong> <code>&lt;db&gt;.&lt;schema&gt;.&lt;AGENT&gt;</code> exists and answers a sample question.</p>
   </div>
+
+  <div class="note"><strong>Why this matters:</strong> the semantic view is where Cortex Analyst gets its accuracy. Business names, curated synonyms, verified queries, and the two <code>AI_*</code> clauses all live here. <a class="inline" href="../semantic-views.html">Exhibit A</a> covers the high-leverage practices in full.</div>
 
   <nav class="pager">
-    <a class="prv" href="wt-semantic-view.html"><span class="dir">&larr; Previous</span><span class="ttl">2 &middot; Semantic View</span></a>
-    <a class="nxt" href="wt-evaluation.html"><span class="dir">Next &rarr;</span><span class="ttl">4 &middot; Evaluation</span></a>
+    <a class="prv" href="wt-setup.html"><span class="dir">&larr; Previous</span><span class="ttl">1 &middot; Setup</span></a>
+    <a class="nxt" href="wt-agent.html"><span class="dir">Next &rarr;</span><span class="ttl">3 &middot; The Agent</span></a>
   </nav>
 </main>
 
 <footer class="site-footer">
   <div class="container">
-    <p>Beyond a Reasonable dbt &middot; <strong>Snowflake | Cortex Agents &amp; dbt</strong> &middot; <a href="walkthrough.html">Proceedings overview</a></p>
+    <p>Beyond a Reasonable dbt &middot; <strong>Snowflake | Cortex Agents &amp; dbt</strong> &middot; <a href="../walkthrough.html">Proceedings overview</a></p>
   </div>
 </footer>
 

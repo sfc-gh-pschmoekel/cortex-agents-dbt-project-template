@@ -4,11 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="snowflake-source" content="cortex-agent-authored" />
-<title>Exhibit B, 3: Failure Patterns &amp; Fixes</title>
+<title>Exhibit A, 1: High-Leverage Practices</title>
 <script type="application/json" id="snowflake-report-metadata">
 {
   "generated": "2026-07-28",
-  "intent": "Exhibit B section 3 of 4: common agent failure patterns, their causes and fixes, and why consistent terminology matters.",
+  "intent": "Exhibit A section 1 of 3: the high-leverage semantic view practices that drive Cortex Analyst accuracy.",
   "sources": [ { "type": "file", "path": "_github/cortex-agents-dbt-project-template/README.md" } ]
 }
 </script>
@@ -49,22 +49,23 @@ h1 { font-size: 2.1rem; font-weight: 700; color: var(--sf-blue-deep); margin: 0 
 p { margin: 0.75rem 0; }
 .muted { color: var(--text-muted); }
 code { font-family: var(--font-mono); font-size: 0.85em; background: var(--sf-blue-pale); color: var(--sf-blue-deep); padding: 0.1em 0.4em; border-radius: 4px; }
-table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: 0.92rem; background: var(--bg); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm); }
-th, td { border: 1px solid var(--border); padding: 0.55rem 0.75rem; text-align: left; vertical-align: top; }
-th { background: var(--sf-blue-pale); color: var(--sf-blue-deep); font-weight: 700; }
-tbody tr:nth-child(even) { background: var(--bg-alt); }
-.warn { border-left: 4px solid var(--warning); background: #FFF7ED; padding: 0.7rem 1rem; border-radius: var(--radius); margin: 1rem 0; font-size: 0.9rem; color: #7A3E00; }
-.warn strong { color: var(--warning); }
+.lever-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin: 1.25rem 0; }
+.lever { background: var(--bg); border: 1px solid var(--border); border-left: 4px solid var(--sf-blue); border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; box-shadow: var(--shadow-sm); }
+.lever h3 { margin: 0 0 0.3rem; font-size: 1rem; color: var(--sf-blue-deep); }
+.lever p { margin: 0; font-size: 0.9rem; color: var(--text-muted); }
+.note { border-left: 4px solid var(--sf-blue); background: var(--sf-blue-pale); padding: 0.7rem 1rem; border-radius: var(--radius); margin: 1rem 0; font-size: 0.9rem; color: var(--sf-blue-darker); }
+.note strong { color: var(--sf-blue-deep); }
 .pager { display: flex; justify-content: space-between; gap: 1rem; margin: 3rem 0 0; }
 .pager a { flex: 1 1 0; text-decoration: none; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 0.9rem 1.1rem; color: var(--sf-blue-deep); background: var(--bg); box-shadow: var(--shadow-sm); transition: transform 0.15s ease, box-shadow 0.15s ease; }
 .pager a:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.pager .spacer { flex: 1 1 0; }
 .pager .nxt { text-align: right; }
 .pager .dir { display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); font-weight: 700; margin-bottom: 0.15rem; }
 .pager .ttl { font-weight: 700; }
 .site-footer { background: var(--sf-blue-darker); color: rgba(255,255,255,0.75); padding: 1.25rem 0; margin-top: 3rem; font-size: 0.875rem; text-align: center; }
 .site-footer strong { color: var(--sf-cyan); }
 .site-footer a { color: var(--sf-cyan); }
-@media (max-width: 700px) { h1 { font-size: 1.7rem; } .container { padding: 0 1rem; } .pager { flex-direction: column; } }
+@media (max-width: 700px) { h1 { font-size: 1.7rem; } .container { padding: 0 1rem; } .pager { flex-direction: column; } .pager .spacer { display: none; } }
 </style>
 </head>
 <body>
@@ -77,59 +78,58 @@ tbody tr:nth-child(even) { background: var(--bg-alt); }
     </div>
     <div class="meta">
       <div class="meta-row"><span class="meta-label">Talk</span> Beyond a Reasonable dbt</div>
-      <div class="meta-row"><span class="meta-label">Section</span> Exhibit B / Failure Patterns</div>
+      <div class="meta-row"><span class="meta-label">Section</span> Exhibit A / Practices</div>
     </div>
   </div>
 </header>
 
 <nav class="topnav">
   <div class="container">
-    <a href="index.html">The Case</a>
+    <a href="../index.html">The Case</a>
     <span class="sep">|</span>
-    <a href="walkthrough.html">The Proceedings</a>
+    <a href="../walkthrough.html">The Proceedings</a>
     <span class="sep">|</span>
-    <a href="semantic-views.html">Exhibit A</a>
+    <span class="cur">Exhibit A</span>
     <span class="sep">|</span>
-    <span class="cur">Exhibit B</span>
+    <a href="../agents.html">Exhibit B</a>
     <span class="sep">|</span>
-    <a href="evaluations.html">Exhibit C</a>
+    <a href="../evaluations.html">Exhibit C</a>
   </div>
 </nav>
 
 <nav class="tabbar">
   <div class="container">
-    <a class="tab" href="exb-layers.html">1 &middot; Three Layers</a>
-    <a class="tab" href="exb-tool-descriptions.html">2 &middot; Tool Descriptions</a>
-    <a class="tab active" href="exb-failure-patterns.html">3 &middot; Failure Patterns</a>
-    <a class="tab" href="exb-spec.html">4 &middot; The Spec</a>
+    <a class="tab active" href="exa-practices.html">1 &middot; Practices</a>
+    <a class="tab" href="exa-ai-clauses.html">2 &middot; AI Clauses</a>
+    <a class="tab" href="exa-clause-order.html">3 &middot; Clause Order</a>
   </div>
 </nav>
 
 <main class="container">
-  <div class="eyebrow">Exhibit B &middot; Section 3 of 4</div>
-  <h1>Failure Patterns &amp; Fixes</h1>
-  <p class="lead">When an agent misbehaves, the cause is usually one of a few things, and the fix is almost always in the tool description.</p>
+  <div class="eyebrow">Exhibit A &middot; Section 1 of 3</div>
+  <h1>High-Leverage Practices</h1>
+  <p class="lead">The semantic view is where Cortex Analyst gets its accuracy. These six moves deliver the most accuracy per unit of effort.</p>
 
-  <table>
-    <thead><tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr></thead>
-    <tbody>
-      <tr><td>Wrong tool selected</td><td>Vague "When to use"</td><td>Add specific examples + "When NOT to use"</td></tr>
-      <tr><td>Parameter errors</td><td>Ambiguous inputs</td><td>Add format, examples, constraints</td></tr>
-      <tr><td>Hallucinations</td><td>Agent using the wrong tool</td><td>Tighten negative routing in the description</td></tr>
-    </tbody>
-  </table>
-  <div class="warn"><strong>Consistency matters:</strong> use the same terminology across all instructions and descriptions. If orchestration says "customers" but a tool description says "accounts", the agent will misbehave. Keep the total number of tools to 5&ndash;10; smaller, focused agents are faster and more reliable.</div>
-  <p class="muted">Diagnosing routing problems is exactly what evaluations are for. See <a href="evaluations.html">Exhibit C</a> for measuring tool selection and execution accuracy.</p>
+  <div class="lever-grid">
+    <div class="lever"><h3>Business names + curated synonyms</h3><p>Name objects the way users speak ("Revenue", not <code>AMT_TOT</code>). Add a few real alternate phrasings, but avoid auto-generated synonym spam.</p></div>
+    <div class="lever"><h3>Comments that teach</h3><p>At view, table, and column level, state business meaning, <strong>grain</strong>, and any exclusions or caveats.</p></div>
+    <div class="lever"><h3>Model KPIs as metrics</h3><p>Put canonical calculations in <code>METRICS</code> (<code>net_sales</code>, <code>avg_order_value</code>). Use <code>FACTS</code> for reusable row-level expressions, <code>DIMENSIONS</code> for grouping/filtering.</p></div>
+    <div class="lever"><h3>Sample values + enums</h3><p>Add <code>SAMPLE_VALUES</code> so the model maps phrasing to real filter values. Add <code>IS_ENUM</code> only when the listed values are the complete set (and it must come after <code>SAMPLE_VALUES</code>).</p></div>
+    <div class="lever"><h3>Verified queries</h3><p><code>AI_VERIFIED_QUERIES</code> for common and failure-prone questions, phrased how users actually ask, one of the strongest accuracy levers.</p></div>
+    <div class="lever"><h3>Explicit keys &amp; relationships</h3><p>Declare <code>PRIMARY KEY</code> / <code>UNIQUE</code> and named <code>RELATIONSHIPS</code>. Prefer a clean star shape; disambiguate multi-path metrics with <code>USING (relationship_name)</code>.</p></div>
+  </div>
+
+  <div class="note"><strong>Keep scope tight.</strong> Start with ~3&ndash;5 tables and roughly 50&ndash;100 columns total. Smaller, focused views outperform "do-it-all" models, because Cortex Analyst has a limited context window. Split by domain when needed.</div>
 
   <nav class="pager">
-    <a class="prv" href="exb-tool-descriptions.html"><span class="dir">&larr; Previous</span><span class="ttl">2 &middot; Tool Descriptions</span></a>
-    <a class="nxt" href="exb-spec.html"><span class="dir">Next &rarr;</span><span class="ttl">4 &middot; The Spec</span></a>
+    <span class="spacer"></span>
+    <a class="nxt" href="exa-ai-clauses.html"><span class="dir">Next &rarr;</span><span class="ttl">2 &middot; The AI_* Clauses</span></a>
   </nav>
 </main>
 
 <footer class="site-footer">
   <div class="container">
-    <p>Beyond a Reasonable dbt &middot; <strong>Snowflake | Cortex Agents &amp; dbt</strong> &middot; <a href="agents.html">Exhibit B overview</a></p>
+    <p>Beyond a Reasonable dbt &middot; <strong>Snowflake | Cortex Agents &amp; dbt</strong> &middot; <a href="../semantic-views.html">Exhibit A overview</a></p>
   </div>
 </footer>
 

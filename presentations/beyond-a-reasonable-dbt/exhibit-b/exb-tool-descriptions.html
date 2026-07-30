@@ -4,12 +4,12 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="snowflake-source" content="cortex-agent-authored" />
-<title>Exhibit A, 2: The AI_* Clauses</title>
+<title>Exhibit B, 2: Tool Descriptions</title>
 <script type="application/json" id="snowflake-report-metadata">
 {
   "generated": "2026-07-28",
-  "intent": "Exhibit A section 2 of 3: the two additive, independent semantic view clauses AI_SQL_GENERATION and AI_QUESTION_CATEGORIZATION.",
-  "sources": [ { "type": "file", "path": "_github/cortex-agents-dbt-project-template/WORKING-SESSION.md" } ]
+  "intent": "Exhibit B section 2 of 4: tool descriptions as the biggest driver of routing accuracy, and the four-part formula.",
+  "sources": [ { "type": "file", "path": "_github/cortex-agents-dbt-project-template/README.md" } ]
 }
 </script>
 <style>
@@ -49,23 +49,24 @@ h1 { font-size: 2.1rem; font-weight: 700; color: var(--sf-blue-deep); margin: 0 
 p { margin: 0.75rem 0; }
 .muted { color: var(--text-muted); }
 code { font-family: var(--font-mono); font-size: 0.85em; background: var(--sf-blue-pale); color: var(--sf-blue-deep); padding: 0.1em 0.4em; border-radius: 4px; }
-table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: 0.92rem; background: var(--bg); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm); }
-th, td { border: 1px solid var(--border); padding: 0.55rem 0.75rem; text-align: left; vertical-align: top; }
-th { background: var(--sf-blue-pale); color: var(--sf-blue-deep); font-weight: 700; }
-tbody tr:nth-child(even) { background: var(--bg-alt); }
+.formula { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: stretch; margin: 1.25rem 0; }
+.formula .part { flex: 1 1 160px; background: var(--gavel-pale); border: 1px solid var(--gavel); border-radius: var(--radius); padding: 0.7rem 0.85rem; }
+.formula .part .n { font-size: 0.7rem; font-weight: 800; color: var(--gavel-deep); letter-spacing: 0.05em; }
+.formula .part .t { font-size: 0.88rem; font-weight: 700; color: var(--sf-blue-deep); }
+.formula .part .d { font-size: 0.8rem; color: var(--text-muted); }
+.plus { align-self: center; color: var(--gavel); font-weight: 700; font-size: 1.1rem; }
 .note { border-left: 4px solid var(--sf-blue); background: var(--sf-blue-pale); padding: 0.7rem 1rem; border-radius: var(--radius); margin: 1rem 0; font-size: 0.9rem; color: var(--sf-blue-darker); }
 .note strong { color: var(--sf-blue-deep); }
 .pager { display: flex; justify-content: space-between; gap: 1rem; margin: 3rem 0 0; }
 .pager a { flex: 1 1 0; text-decoration: none; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 0.9rem 1.1rem; color: var(--sf-blue-deep); background: var(--bg); box-shadow: var(--shadow-sm); transition: transform 0.15s ease, box-shadow 0.15s ease; }
 .pager a:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-.pager .spacer { flex: 1 1 0; }
 .pager .nxt { text-align: right; }
 .pager .dir { display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); font-weight: 700; margin-bottom: 0.15rem; }
 .pager .ttl { font-weight: 700; }
 .site-footer { background: var(--sf-blue-darker); color: rgba(255,255,255,0.75); padding: 1.25rem 0; margin-top: 3rem; font-size: 0.875rem; text-align: center; }
 .site-footer strong { color: var(--sf-cyan); }
 .site-footer a { color: var(--sf-cyan); }
-@media (max-width: 700px) { h1 { font-size: 1.7rem; } .container { padding: 0 1rem; } .pager { flex-direction: column; } .pager .spacer { display: none; } }
+@media (max-width: 700px) { h1 { font-size: 1.7rem; } .container { padding: 0 1rem; } .pager { flex-direction: column; } }
 </style>
 </head>
 <body>
@@ -78,65 +79,60 @@ tbody tr:nth-child(even) { background: var(--bg-alt); }
     </div>
     <div class="meta">
       <div class="meta-row"><span class="meta-label">Talk</span> Beyond a Reasonable dbt</div>
-      <div class="meta-row"><span class="meta-label">Section</span> Exhibit A / AI Clauses</div>
+      <div class="meta-row"><span class="meta-label">Section</span> Exhibit B / Tool Descriptions</div>
     </div>
   </div>
 </header>
 
 <nav class="topnav">
   <div class="container">
-    <a href="index.html">The Case</a>
+    <a href="../index.html">The Case</a>
     <span class="sep">|</span>
-    <a href="walkthrough.html">The Proceedings</a>
+    <a href="../walkthrough.html">The Proceedings</a>
     <span class="sep">|</span>
-    <span class="cur">Exhibit A</span>
+    <a href="../semantic-views.html">Exhibit A</a>
     <span class="sep">|</span>
-    <a href="agents.html">Exhibit B</a>
+    <span class="cur">Exhibit B</span>
     <span class="sep">|</span>
-    <a href="evaluations.html">Exhibit C</a>
+    <a href="../evaluations.html">Exhibit C</a>
   </div>
 </nav>
 
 <nav class="tabbar">
   <div class="container">
-    <a class="tab" href="exa-practices.html">1 &middot; Practices</a>
-    <a class="tab active" href="exa-ai-clauses.html">2 &middot; AI Clauses</a>
-    <a class="tab" href="exa-clause-order.html">3 &middot; Clause Order</a>
+    <a class="tab" href="exb-layers.html">1 &middot; Three Layers</a>
+    <a class="tab active" href="exb-tool-descriptions.html">2 &middot; Tool Descriptions</a>
+    <a class="tab" href="exb-failure-patterns.html">3 &middot; Failure Patterns</a>
+    <a class="tab" href="exb-spec.html">4 &middot; The Spec</a>
   </div>
 </nav>
 
 <main class="container">
-  <div class="eyebrow">Exhibit A &middot; Section 2 of 3</div>
-  <h1>The AI_* Clauses: Additive and Independent</h1>
-  <p class="lead">Two optional, completely independent modules. Use neither, one, or both. Start with what you know is wrong today; add rules as you find gaps during testing. Over-prompting degrades accuracy and raises token cost.</p>
+  <div class="eyebrow">Exhibit B &middot; Section 2 of 4</div>
+  <h1>Tool Descriptions Drive Routing Accuracy</h1>
+  <p class="lead">Agents pick tools by name and description alone, not by inspecting your data model. This is the single biggest lever on routing accuracy. Write every description with this formula:</p>
 
-  <table>
-    <thead><tr><th>Clause</th><th>Fires</th><th>Good candidates</th></tr></thead>
-    <tbody>
-      <tr>
-        <td><code>AI_SQL_GENERATION</code><br><span class="muted">how the agent writes SQL</span></td>
-        <td>During SQL generation</td>
-        <td>Default time filters ("no date &rarr; last 30 days"); fiscal calendar offsets; rounding/formatting; domain classification ("stock CRITICAL &lt;10, LOW 10&ndash;24, OK 25+"); enum casing quirks</td>
-      </tr>
-      <tr>
-        <td><code>AI_QUESTION_CATEGORIZATION</code><br><span class="muted">what to do with a question</span></td>
-        <td>Before SQL is attempted</td>
-        <td>Reject out-of-scope topics ("employee data &rarr; contact HR"); table routing when unrelated tables share a view; ask for clarification on ambiguous questions; encoding guardrails (doubled single quotes for apostrophes)</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div class="note"><strong>Keep SQL-generation rules here, not in the agent.</strong> Rounding, metric synonyms ("sales" = <code>net_sales</code>), and default filters belong in <code>AI_SQL_GENERATION</code>, not in agent instructions. One source of truth.</div>
+  <div class="formula">
+    <div class="part"><div class="n">1</div><div class="t">What it does</div><div class="d">+ what data it accesses (grain, metrics, history, refresh)</div></div>
+    <div class="plus">+</div>
+    <div class="part"><div class="n">2</div><div class="t">When to use</div><div class="d">specific question types, with examples</div></div>
+    <div class="plus">+</div>
+    <div class="part"><div class="n">3</div><div class="t">When NOT to use</div><div class="d">critical: stops overuse for anything remotely related</div></div>
+    <div class="plus">+</div>
+    <div class="part"><div class="n">4</div><div class="t">Input guidance</div><div class="d">units, date formats, key filter values</div></div>
+  </div>
+  <p>Give every tool a distinct domain and a non-overlapping "when to use", and always include an explicit "when NOT to use". When you have multiple Analyst tools, the descriptions are what let the agent tell them apart.</p>
+  <div class="note"><strong>The negative case earns its keep:</strong> without an explicit "when NOT to use", the agent reaches for a tool on anything remotely related. That one line prevents a whole class of wrong-tool answers.</div>
 
   <nav class="pager">
-    <a class="prv" href="exa-practices.html"><span class="dir">&larr; Previous</span><span class="ttl">1 &middot; Practices</span></a>
-    <a class="nxt" href="exa-clause-order.html"><span class="dir">Next &rarr;</span><span class="ttl">3 &middot; Clause Order</span></a>
+    <a class="prv" href="exb-layers.html"><span class="dir">&larr; Previous</span><span class="ttl">1 &middot; Three Layers</span></a>
+    <a class="nxt" href="exb-failure-patterns.html"><span class="dir">Next &rarr;</span><span class="ttl">3 &middot; Failure Patterns</span></a>
   </nav>
 </main>
 
 <footer class="site-footer">
   <div class="container">
-    <p>Beyond a Reasonable dbt &middot; <strong>Snowflake | Cortex Agents &amp; dbt</strong> &middot; <a href="semantic-views.html">Exhibit A overview</a></p>
+    <p>Beyond a Reasonable dbt &middot; <strong>Snowflake | Cortex Agents &amp; dbt</strong> &middot; <a href="../agents.html">Exhibit B overview</a></p>
   </div>
 </footer>
 

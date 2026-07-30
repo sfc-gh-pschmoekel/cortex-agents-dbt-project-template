@@ -4,11 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="snowflake-source" content="cortex-agent-authored" />
-<title>Exhibit B, 2: Tool Descriptions</title>
+<title>Exhibit B, 4: Where the Spec Lives</title>
 <script type="application/json" id="snowflake-report-metadata">
 {
   "generated": "2026-07-28",
-  "intent": "Exhibit B section 2 of 4: tool descriptions as the biggest driver of routing accuracy, and the four-part formula.",
+  "intent": "Exhibit B section 4 of 4: where the agent spec lives (deploy wrapper macro), environment token substitution, and the execution_environment requirement.",
   "sources": [ { "type": "file", "path": "_github/cortex-agents-dbt-project-template/README.md" } ]
 }
 </script>
@@ -49,20 +49,20 @@ h1 { font-size: 2.1rem; font-weight: 700; color: var(--sf-blue-deep); margin: 0 
 p { margin: 0.75rem 0; }
 .muted { color: var(--text-muted); }
 code { font-family: var(--font-mono); font-size: 0.85em; background: var(--sf-blue-pale); color: var(--sf-blue-deep); padding: 0.1em 0.4em; border-radius: 4px; }
-.formula { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: stretch; margin: 1.25rem 0; }
-.formula .part { flex: 1 1 160px; background: var(--gavel-pale); border: 1px solid var(--gavel); border-radius: var(--radius); padding: 0.7rem 0.85rem; }
-.formula .part .n { font-size: 0.7rem; font-weight: 800; color: var(--gavel-deep); letter-spacing: 0.05em; }
-.formula .part .t { font-size: 0.88rem; font-weight: 700; color: var(--sf-blue-deep); }
-.formula .part .d { font-size: 0.8rem; color: var(--text-muted); }
-.plus { align-self: center; color: var(--gavel); font-weight: 700; font-size: 1.1rem; }
-.note { border-left: 4px solid var(--sf-blue); background: var(--sf-blue-pale); padding: 0.7rem 1rem; border-radius: var(--radius); margin: 1rem 0; font-size: 0.9rem; color: var(--sf-blue-darker); }
-.note strong { color: var(--sf-blue-deep); }
+pre { background: #0A3D5A; color: #E8F6FC; border-radius: var(--radius); padding: 1rem 1.15rem; overflow-x: auto; font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.55; margin: 0.75rem 0; }
+pre code { background: none; color: inherit; padding: 0; }
+pre .cmt { color: #71D3DC; }
+pre .kw { color: #FFD27F; font-weight: 600; }
+.warn { border-left: 4px solid var(--warning); background: #FFF7ED; padding: 0.7rem 1rem; border-radius: var(--radius); margin: 1rem 0; font-size: 0.9rem; color: #7A3E00; }
+.warn strong { color: var(--warning); }
 .pager { display: flex; justify-content: space-between; gap: 1rem; margin: 3rem 0 0; }
 .pager a { flex: 1 1 0; text-decoration: none; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 0.9rem 1.1rem; color: var(--sf-blue-deep); background: var(--bg); box-shadow: var(--shadow-sm); transition: transform 0.15s ease, box-shadow 0.15s ease; }
 .pager a:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 .pager .nxt { text-align: right; }
 .pager .dir { display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); font-weight: 700; margin-bottom: 0.15rem; }
 .pager .ttl { font-weight: 700; }
+.visual-ph { border: 2px dashed var(--border-strong); border-radius: var(--radius-lg); background: repeating-linear-gradient(45deg, #FBFDFE, #FBFDFE 10px, #F3F8FB 10px, #F3F8FB 20px); padding: 1.5rem; text-align: center; color: var(--text-muted); margin: 1.5rem 0; }
+.visual-ph .vp-tag { display: inline-block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--sf-blue-deep); background: var(--sf-blue-pale); border: 1px solid var(--sf-blue); border-radius: 4px; padding: 0.15em 0.6em; margin-bottom: 0.5rem; }
 .site-footer { background: var(--sf-blue-darker); color: rgba(255,255,255,0.75); padding: 1.25rem 0; margin-top: 3rem; font-size: 0.875rem; text-align: center; }
 .site-footer strong { color: var(--sf-cyan); }
 .site-footer a { color: var(--sf-cyan); }
@@ -79,60 +79,74 @@ code { font-family: var(--font-mono); font-size: 0.85em; background: var(--sf-bl
     </div>
     <div class="meta">
       <div class="meta-row"><span class="meta-label">Talk</span> Beyond a Reasonable dbt</div>
-      <div class="meta-row"><span class="meta-label">Section</span> Exhibit B / Tool Descriptions</div>
+      <div class="meta-row"><span class="meta-label">Section</span> Exhibit B / The Spec</div>
     </div>
   </div>
 </header>
 
 <nav class="topnav">
   <div class="container">
-    <a href="index.html">The Case</a>
+    <a href="../index.html">The Case</a>
     <span class="sep">|</span>
-    <a href="walkthrough.html">The Proceedings</a>
+    <a href="../walkthrough.html">The Proceedings</a>
     <span class="sep">|</span>
-    <a href="semantic-views.html">Exhibit A</a>
+    <a href="../semantic-views.html">Exhibit A</a>
     <span class="sep">|</span>
     <span class="cur">Exhibit B</span>
     <span class="sep">|</span>
-    <a href="evaluations.html">Exhibit C</a>
+    <a href="../evaluations.html">Exhibit C</a>
   </div>
 </nav>
 
 <nav class="tabbar">
   <div class="container">
     <a class="tab" href="exb-layers.html">1 &middot; Three Layers</a>
-    <a class="tab active" href="exb-tool-descriptions.html">2 &middot; Tool Descriptions</a>
+    <a class="tab" href="exb-tool-descriptions.html">2 &middot; Tool Descriptions</a>
     <a class="tab" href="exb-failure-patterns.html">3 &middot; Failure Patterns</a>
-    <a class="tab" href="exb-spec.html">4 &middot; The Spec</a>
+    <a class="tab active" href="exb-spec.html">4 &middot; The Spec</a>
   </div>
 </nav>
 
 <main class="container">
-  <div class="eyebrow">Exhibit B &middot; Section 2 of 4</div>
-  <h1>Tool Descriptions Drive Routing Accuracy</h1>
-  <p class="lead">Agents pick tools by name and description alone, not by inspecting your data model. This is the single biggest lever on routing accuracy. Write every description with this formula:</p>
+  <div class="eyebrow">Exhibit B &middot; Section 4 of 4</div>
+  <h1>Where the Spec Lives (and How It Deploys)</h1>
+  <p class="lead">dbt Projects on Snowflake has no runtime file read, so each agent's spec lives inline in a <code>deploy_&lt;agent&gt;</code> wrapper macro in <code>agents/&lt;agent&gt;.sql</code>. The wrapper passes the spec to <code>create_agent</code> / <code>alter_agent</code>, which substitute the environment tokens with the active target, so the same spec deploys to dev, staging, or prod unchanged.</p>
 
-  <div class="formula">
-    <div class="part"><div class="n">1</div><div class="t">What it does</div><div class="d">+ what data it accesses (grain, metrics, history, refresh)</div></div>
-    <div class="plus">+</div>
-    <div class="part"><div class="n">2</div><div class="t">When to use</div><div class="d">specific question types, with examples</div></div>
-    <div class="plus">+</div>
-    <div class="part"><div class="n">3</div><div class="t">When NOT to use</div><div class="d">critical: stops overuse for anything remotely related</div></div>
-    <div class="plus">+</div>
-    <div class="part"><div class="n">4</div><div class="t">Input guidance</div><div class="d">units, date formats, key filter values</div></div>
+  <pre><code>{% macro <span class="kw">deploy_example_agent</span>(alter=false) %}
+  {% set spec %}
+    models: { orchestration: auto }
+    instructions:
+      orchestration: <span class="cmt">"routing + defaults + fallbacks"</span>
+      response:      <span class="cmt">"tone, tables vs charts, units"</span>
+      sample_questions: [ ... ]
+    tools:
+      - tool_spec:
+          name: sales_analyst
+          description: <span class="cmt">"what + when + when NOT + inputs"</span>
+    tool_resources:
+      sales_analyst:
+        semantic_view: <span class="kw">&lt;&lt;DATABASE&gt;&gt;.&lt;&lt;SCHEMA&gt;&gt;</span>.SV_SALES
+        execution_environment: { type: warehouse, warehouse: <span class="kw">&lt;&lt;WAREHOUSE&gt;&gt;</span> }
+  {% endset %}
+  {{ create_agent('example_agent', spec) }}
+{% endmacro %}</code></pre>
+  <div class="warn"><strong>Required:</strong> every <code>cortex_analyst_text_to_sql</code> tool needs an <code>execution_environment</code> under <code>tool_resources</code> (the warehouse its SQL runs in). Use <code>execution_environment: { type: warehouse, warehouse: &lt;name&gt; }</code>, not a top-level <code>warehouse</code> key.</div>
+  <p class="muted">Deploy with <code>dbt run-operation deploy_&lt;agent&gt;</code> (CREATE OR REPLACE). For zero-downtime edits to a live agent, add <code>--args '{alter: true}'</code>.</p>
+
+  <div class="visual-ph">
+    <div class="vp-tag">Visual</div>
+    <div>Drop an agent trace here (Snowsight AI Observability) showing tool routing, great for illustrating a "when NOT to use" fix before/after.</div>
   </div>
-  <p>Give every tool a distinct domain and a non-overlapping "when to use", and always include an explicit "when NOT to use". When you have multiple Analyst tools, the descriptions are what let the agent tell them apart.</p>
-  <div class="note"><strong>The negative case earns its keep:</strong> without an explicit "when NOT to use", the agent reaches for a tool on anything remotely related. That one line prevents a whole class of wrong-tool answers.</div>
 
   <nav class="pager">
-    <a class="prv" href="exb-layers.html"><span class="dir">&larr; Previous</span><span class="ttl">1 &middot; Three Layers</span></a>
-    <a class="nxt" href="exb-failure-patterns.html"><span class="dir">Next &rarr;</span><span class="ttl">3 &middot; Failure Patterns</span></a>
+    <a class="prv" href="exb-failure-patterns.html"><span class="dir">&larr; Previous</span><span class="ttl">3 &middot; Failure Patterns</span></a>
+    <a class="nxt" href="../evaluations.html"><span class="dir">Next exhibit &rarr;</span><span class="ttl">Exhibit C &middot; Evaluations</span></a>
   </nav>
 </main>
 
 <footer class="site-footer">
   <div class="container">
-    <p>Beyond a Reasonable dbt &middot; <strong>Snowflake | Cortex Agents &amp; dbt</strong> &middot; <a href="agents.html">Exhibit B overview</a></p>
+    <p>Beyond a Reasonable dbt &middot; <strong>Snowflake | Cortex Agents &amp; dbt</strong> &middot; <a href="../agents.html">Exhibit B overview</a></p>
   </div>
 </footer>
 
