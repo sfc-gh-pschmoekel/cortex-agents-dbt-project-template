@@ -92,13 +92,13 @@ tbody tr:nth-child(even) { background: var(--bg-alt); }
 
 <nav class="topnav">
   <div class="container">
-    <a href="index.html">The Case</a>
+    <a href="../index.html">The Case</a>
     <span class="sep">|</span>
-    <a href="walkthrough.html">The Proceedings</a>
+    <a href="../walkthrough.html">The Proceedings</a>
     <span class="sep">|</span>
-    <a href="semantic-views.html">Exhibit A</a>
+    <a href="../semantic-views.html">Exhibit A</a>
     <span class="sep">|</span>
-    <a href="agents.html">Exhibit B</a>
+    <a href="../agents.html">Exhibit B</a>
     <span class="sep">|</span>
     <span class="cur">Exhibit C</span>
   </div>
@@ -130,7 +130,7 @@ tbody tr:nth-child(even) { background: var(--bg-alt); }
 
 <span class="cmt">-- check progress (same call, STATUS verb); also CANCEL / DELETE</span>
 <span class="kw">CALL</span> EXECUTE_AI_EVALUATION('STATUS', OBJECT_CONSTRUCT('run_name','run-1'), '@...');</code></pre>
-  <div class="note"><strong>Schedule it.</strong> Because it is a function call, you can wrap <code>EXECUTE_AI_EVALUATION</code> in a Snowflake Task to run or check evaluations on a cadence, exactly as the walkthrough's <a href="wt-ship.html">Ship &amp; Automate</a> step does.</div>
+  <div class="note"><strong>Schedule it.</strong> Because it is a function call, you can wrap <code>EXECUTE_AI_EVALUATION</code> in a Snowflake Task to run or check evaluations on a cadence, exactly as the walkthrough's <a href="../proceedings/wt-ship.html">Ship &amp; Automate</a> step does.</div>
 
   <h2>The config YAML</h2>
   <p>The config has three top-level keys: an optional <code>dataset</code> (to build a dataset from a table), <code>evaluation</code> (which agent + which dataset), and <code>metrics</code> (built-in strings plus any custom definitions).</p>
@@ -169,7 +169,7 @@ metrics:
 
 <footer class="site-footer">
   <div class="container">
-    <p>Beyond a Reasonable dbt &middot; <strong>Snowflake | Cortex Agents &amp; dbt</strong> &middot; <a href="evaluations.html">Exhibit C overview</a></p>
+    <p>Beyond a Reasonable dbt &middot; <strong>Snowflake | Cortex Agents &amp; dbt</strong> &middot; <a href="../evaluations.html">Exhibit C overview</a></p>
   </div>
 </footer>
 

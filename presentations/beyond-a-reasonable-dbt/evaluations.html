@@ -112,11 +112,11 @@ code { font-family: var(--font-mono); font-size: 0.85em; background: var(--sf-bl
 
 <nav class="tabbar">
   <div class="container">
-    <a class="tab" href="exc-overview.html">1 &middot; Why Evaluate</a>
-    <a class="tab" href="exc-metrics.html">2 &middot; The Metrics</a>
-    <a class="tab" href="exc-dataset.html">3 &middot; The Dataset</a>
-    <a class="tab" href="exc-running.html">4 &middot; Run &amp; Inspect</a>
-    <a class="tab" href="exc-iterate.html">5 &middot; Iterate</a>
+    <a class="tab" href="exhibit-c/exc-overview.html">1 &middot; Why Evaluate</a>
+    <a class="tab" href="exhibit-c/exc-metrics.html">2 &middot; The Metrics</a>
+    <a class="tab" href="exhibit-c/exc-dataset.html">3 &middot; The Dataset</a>
+    <a class="tab" href="exhibit-c/exc-running.html">4 &middot; Run &amp; Inspect</a>
+    <a class="tab" href="exhibit-c/exc-iterate.html">5 &middot; Iterate</a>
   </div>
 </nav>
 
@@ -127,35 +127,35 @@ code { font-family: var(--font-mono); font-size: 0.85em; background: var(--sf-bl
 
   <div class="note"><strong>Status:</strong> Cortex Agent evaluations reached <strong>general availability</strong> on 2026-03-13 (answer correctness, logical consistency, custom metrics). The two tool metrics (tool selection and tool execution accuracy) are in <strong>public preview</strong> as of 2026-06-11. <span class="badge badge-ga">GA</span> <span class="badge badge-pp">Public Preview</span></div>
 
-  <p>Exhibit C is the deep dive behind the walkthrough's <a href="wt-evaluation.html">Phase 5: The Verdict</a>. Where the walkthrough shows the commands to run, this exhibit explains the framework, the metrics, and how to iterate.</p>
+  <p>Exhibit C is the deep dive behind the walkthrough's <a href="proceedings/wt-evaluation.html">Phase 5: The Verdict</a>. Where the walkthrough shows the commands to run, this exhibit explains the framework, the metrics, and how to iterate.</p>
 
   <h2>Pick a section</h2>
   <div class="card-grid">
-    <a class="card" href="exc-overview.html">
+    <a class="card" href="exhibit-c/exc-overview.html">
       <div class="card-step">Section 1</div>
       <div class="card-title">Why Evaluate</div>
       <div class="card-desc">The Goal-Plan-Action framework: why evaluating each step beats judging only the answer, plus GA/preview status and access prerequisites.</div>
       <div class="card-cta">Open <span class="arrow">&rarr;</span></div>
     </a>
-    <a class="card" href="exc-metrics.html">
+    <a class="card" href="exhibit-c/exc-metrics.html">
       <div class="card-step">Section 2</div>
       <div class="card-title">The Metrics</div>
       <div class="card-desc">Four system metrics mapped to the GPA loop, which need ground truth, and how custom LLM-judge metrics work.</div>
       <div class="card-cta">Open <span class="arrow">&rarr;</span></div>
     </a>
-    <a class="card" href="exc-dataset.html">
+    <a class="card" href="exhibit-c/exc-dataset.html">
       <div class="card-step">Section 3</div>
       <div class="card-title">The Dataset</div>
       <div class="card-desc">The two-column dataset, the ground_truth VARIANT keys, AC vs tool tracks, the empty-array no-tool guardrail, and writing good rubrics.</div>
       <div class="card-cta">Open <span class="arrow">&rarr;</span></div>
     </a>
-    <a class="card" href="exc-running.html">
+    <a class="card" href="exhibit-c/exc-running.html">
       <div class="card-step">Section 4</div>
       <div class="card-title">Run &amp; Inspect</div>
       <div class="card-desc">EXECUTE_AI_EVALUATION, the YAML config, the GET_AI_* retrieval functions, and the Snowsight Evaluations tab.</div>
       <div class="card-cta">Open <span class="arrow">&rarr;</span></div>
     </a>
-    <a class="card" href="exc-iterate.html">
+    <a class="card" href="exhibit-c/exc-iterate.html">
       <div class="card-step">Section 5</div>
       <div class="card-title">Iterate &amp; Operate</div>
       <div class="card-desc">Interpret scores, seed datasets from production, use Cortex Code sub-skills, schedule runs, and mind the cost and known limits.</div>

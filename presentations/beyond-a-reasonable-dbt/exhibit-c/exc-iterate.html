@@ -4,11 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="snowflake-source" content="cortex-agent-authored" />
-<title>Exhibit C, 3: The Dataset</title>
+<title>Exhibit C, 5: Iterate &amp; Operate</title>
 <script type="application/json" id="snowflake-report-metadata">
 {
   "generated": "2026-07-28",
-  "intent": "Exhibit C section 3 of 5: the evaluation dataset format, the ground_truth VARIANT keys, AC vs tool tracks, the no-tool guardrail, and writing good ground-truth rubrics.",
+  "intent": "Exhibit C section 5 of 5: interpret scores and iterate, seed datasets from production, Cortex Code sub-skills, scheduling, cost, and known limits.",
   "sources": [
     { "type": "url", "url": "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents-evaluations" }
   ]
@@ -52,10 +52,8 @@ h2 { font-size: 1.25rem; font-weight: 600; color: var(--sf-blue-deep); margin: 2
 p { margin: 0.75rem 0; }
 .muted { color: var(--text-muted); }
 code { font-family: var(--font-mono); font-size: 0.85em; background: var(--sf-blue-pale); color: var(--sf-blue-deep); padding: 0.1em 0.4em; border-radius: 4px; }
-pre { background: #0A3D5A; color: #E8F6FC; border-radius: var(--radius); padding: 1rem 1.15rem; overflow-x: auto; font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.55; margin: 0.75rem 0; }
-pre code { background: none; color: inherit; padding: 0; }
-pre .cmt { color: #71D3DC; }
-pre .kw { color: #FFD27F; font-weight: 600; }
+ul { margin: 0.75rem 0; padding-left: 1.3rem; }
+li { margin: 0.35rem 0; }
 table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: 0.9rem; background: var(--bg); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm); }
 th, td { border: 1px solid var(--border); padding: 0.55rem 0.7rem; text-align: left; vertical-align: top; }
 th { background: var(--sf-blue-pale); color: var(--sf-blue-deep); font-weight: 700; }
@@ -86,20 +84,20 @@ tbody tr:nth-child(even) { background: var(--bg-alt); }
     </div>
     <div class="meta">
       <div class="meta-row"><span class="meta-label">Talk</span> Beyond a Reasonable dbt</div>
-      <div class="meta-row"><span class="meta-label">Section</span> Exhibit C / The Dataset</div>
+      <div class="meta-row"><span class="meta-label">Section</span> Exhibit C / Iterate &amp; Operate</div>
     </div>
   </div>
 </header>
 
 <nav class="topnav">
   <div class="container">
-    <a href="index.html">The Case</a>
+    <a href="../index.html">The Case</a>
     <span class="sep">|</span>
-    <a href="walkthrough.html">The Proceedings</a>
+    <a href="../walkthrough.html">The Proceedings</a>
     <span class="sep">|</span>
-    <a href="semantic-views.html">Exhibit A</a>
+    <a href="../semantic-views.html">Exhibit A</a>
     <span class="sep">|</span>
-    <a href="agents.html">Exhibit B</a>
+    <a href="../agents.html">Exhibit B</a>
     <span class="sep">|</span>
     <span class="cur">Exhibit C</span>
   </div>
@@ -109,75 +107,57 @@ tbody tr:nth-child(even) { background: var(--bg-alt); }
   <div class="container">
     <a class="tab" href="exc-overview.html">1 &middot; Why Evaluate</a>
     <a class="tab" href="exc-metrics.html">2 &middot; The Metrics</a>
-    <a class="tab active" href="exc-dataset.html">3 &middot; The Dataset</a>
+    <a class="tab" href="exc-dataset.html">3 &middot; The Dataset</a>
     <a class="tab" href="exc-running.html">4 &middot; Run &amp; Inspect</a>
-    <a class="tab" href="exc-iterate.html">5 &middot; Iterate</a>
+    <a class="tab active" href="exc-iterate.html">5 &middot; Iterate</a>
   </div>
 </nav>
 
 <main class="container">
-  <div class="eyebrow">Exhibit C &middot; Section 3 of 5</div>
-  <h1>The Dataset</h1>
-  <p class="lead">An evaluation dataset is a table with two columns: the input query, and a ground-truth VARIANT the judges compare against. What you put in the VARIANT depends on which metrics you enable.</p>
+  <div class="eyebrow">Exhibit C &middot; Section 5 of 5</div>
+  <h1>Iterate &amp; Operate</h1>
+  <p class="lead">An evaluation is only useful if it drives the next improvement. The loop: inspect the trace, diagnose the root cause, fix the right layer, and re-run.</p>
 
+  <h2>Interpret and iterate</h2>
+  <p>Snowsight buckets each metric's records into high (80% or more), medium (30% or more), and failed. Read the pattern, then fix the right layer:</p>
   <table>
-    <thead><tr><th>Column</th><th>Type</th><th>Holds</th></tr></thead>
+    <thead><tr><th>Score pattern</th><th>Likely cause</th><th>Fix</th></tr></thead>
     <tbody>
-      <tr><td><code>input_query</code></td><td>VARCHAR</td><td>The user query to evaluate</td></tr>
-      <tr><td><code>ground_truth</code></td><td>VARIANT</td><td>A JSON object describing the expected behavior</td></tr>
+      <tr><td>Low answer correctness</td><td>Weak ground-truth rubric, or wrong tool selected</td><td>Improve the rubric wording; check tool descriptions (<a href="../exhibit-b/exb-tool-descriptions.html">Exhibit B</a>)</td></tr>
+      <tr><td>Low logical consistency</td><td>Agent reasoning contradicts itself or its instructions</td><td>Tighten orchestration; reduce instruction length</td></tr>
+      <tr><td>Low tool accuracy</td><td>Tool descriptions too vague</td><td>Sharpen "when to use" / "when NOT to use"</td></tr>
+      <tr><td>High consistency, low correctness</td><td>Agent is honest about limits but not finding the answer</td><td>Improve semantic view coverage; add verified queries (<a href="../exhibit-a/exa-practices.html">Exhibit A</a>)</td></tr>
     </tbody>
   </table>
 
-  <h2>Two keys, two tracks</h2>
+  <h2>Seed and grow the dataset</h2>
   <ul>
-    <li><strong><code>ground_truth_output</code></strong> feeds <code>answer_correctness</code> (the "AC track"). It is compared to everything the user sees in the streamed reply.</li>
-    <li><strong><code>ground_truth_invocations</code></strong> feeds tool selection and execution accuracy (the "tool track"). It is an array of expected tool calls, each with <code>tool_name</code> and optional <code>tool_input</code> / <code>tool_output</code>.</li>
-    <li><strong><code>logical_consistency</code></strong> is reference-free and needs no ground truth, so a row can leave the column empty.</li>
+    <li><strong>From production:</strong> import queries from agent monitoring data, and turn thumbs-up responses into new ground-truth rows.</li>
+    <li><strong>With Cortex Code:</strong> the <code>cortex-agent</code> skill's sub-skills help you generate synthetic queries (<code>dataset-curation</code>), run a check (<code>evaluate-cortex-agent</code>), diagnose issues (<code>investigate-cortex-agent-evals</code>), and suggest fixes (<code>optimize-cortex-agent</code>).</li>
+    <li><strong>Aim for 15 to 20 questions</strong> spanning easy, medium, and hard, with phrasing variations of key questions.</li>
   </ul>
-  <p>One VARIANT can carry keys for several metrics at once, so a single dataset can drive answer correctness, the tool metrics, and custom metrics in the same run. Start with AC-track rows; add tool-track rows once the agent is stable.</p>
-  <div class="note"><strong>The no-tool guardrail:</strong> set <code>"ground_truth_invocations": []</code> (an empty array) to verify the agent correctly abstains from calling any tool on an out-of-scope question.</div>
 
-  <h2>Insert a row with PARSE_JSON</h2>
-  <pre><code><span class="kw">CREATE OR REPLACE TABLE</span> agent_evaluation_data (
-  input_query VARCHAR,
-  ground_truth VARIANT
-);
+  <h2>Cost</h2>
+  <p>An evaluation runs the agent once per query and then runs LLM judges (the <code>AI_COMPLETE</code> function) to score each metric. You are charged for the agent runs, the judge inference, the warehouse time for the managing tasks and metric queries, and storage for datasets and results.</p>
 
-<span class="kw">INSERT INTO</span> agent_evaluation_data
-  <span class="kw">SELECT</span>
-    'What was Q1 2025 revenue by product category, and what does our return policy say for electronics?',
-    <span class="kw">PARSE_JSON</span>('
-      {
-        "ground_truth_output": "Q1 2025 revenue was ~1.2M Services, 1.4M Hardware, 1.1M Subscriptions USD. Electronics: 30-day returns, 1-year warranty.",
-        "ground_truth_invocations": [
-          { "tool_name": "finance_analyst",
-            "tool_input": "Q1 2025 revenue by product category",
-            "tool_output": "SQL aggregating revenue by category for Jan-Mar 2025, ~3 rows near 1.2M/1.4M/1.1M." },
-          { "tool_name": "product_docs_search",
-            "tool_input": "return policy and warranty for electronics",
-            "tool_output": "Policy page mentioning 30-day returns and a 1-year warranty." }
-        ]
-      }
-    ');</code></pre>
-  <div class="warn"><strong>Use PARSE_JSON, not OBJECT_CONSTRUCT.</strong> <code>OBJECT_CONSTRUCT</code> / <code>ARRAY_CONSTRUCT</code> return OBJECT and ARRAY, not VARIANT. Wrap the JSON in <code>PARSE_JSON</code> (or <code>TO_VARIANT</code>) to guarantee the column type. This mirrors the template's rule to keep <code>PARSE_JSON</code> in <code>eval_dataset.sql</code>.</div>
-
-  <h2>Writing good ground truth</h2>
-  <p>Because <code>ground_truth_output</code> is fed to an LLM prompt, treat it as a plain-language <strong>rubric</strong> built from literal, verifiable values:</p>
+  <h2>Known limits to plan around</h2>
+  <div class="warn"><strong>Not yet supported as evaluated tools:</strong> MCP server tools, the code-execution tool, and skills. An agent that relies on the code-execution tool or skills fails to run; MCP tools simply are not exercised.</div>
   <ul>
-    <li><strong>Known, stable answer:</strong> state the value with rounding, tolerance, units, and scope ("within &plusmn;2% of 123.45; exclude test accounts").</li>
-    <li><strong>Live or changing answer:</strong> describe what a correct reply should and should not contain, in enough detail that two readers would agree.</li>
-    <li><strong>Out-of-scope:</strong> state that the agent should refuse and not fabricate.</li>
+    <li><strong>Ground-truth staleness:</strong> scope input queries to absolute dates ("revenue between January and March 2026"), not relative ones ("this quarter"), so results stay comparable over time.</li>
+    <li><strong>Throughput:</strong> long traces and many tool calls slow a run. If you hit timeouts, split the dataset (for example by common tool invocation) or shorten a custom-metric prompt.</li>
   </ul>
+
+  <div class="note"><strong>Ship gate:</strong> target <strong>&ge;95%</strong> answer correctness before rollout, per the walkthrough's <a href="../proceedings/wt-ship.html">Closing Arguments</a>. Fall short, fix the highest-leverage layer, and re-run.</div>
 
   <nav class="pager">
-    <a class="prv" href="exc-metrics.html"><span class="dir">&larr; Previous</span><span class="ttl">2 &middot; The Metrics</span></a>
-    <a class="nxt" href="exc-running.html"><span class="dir">Next &rarr;</span><span class="ttl">4 &middot; Run &amp; Inspect</span></a>
+    <a class="prv" href="exc-running.html"><span class="dir">&larr; Previous</span><span class="ttl">4 &middot; Run &amp; Inspect</span></a>
+    <a class="nxt" href="../index.html"><span class="dir">Back to &uarr;</span><span class="ttl">The Case</span></a>
   </nav>
 </main>
 
 <footer class="site-footer">
   <div class="container">
-    <p>Beyond a Reasonable dbt &middot; <strong>Snowflake | Cortex Agents &amp; dbt</strong> &middot; <a href="evaluations.html">Exhibit C overview</a></p>
+    <p>Beyond a Reasonable dbt &middot; <strong>Snowflake | Cortex Agents &amp; dbt</strong> &middot; <a href="../evaluations.html">Exhibit C overview</a></p>
   </div>
 </footer>
 
