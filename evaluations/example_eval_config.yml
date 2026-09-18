@@ -1,18 +1,5 @@
 # Cortex Agent Evaluation Configuration
-# Upload this file to the EVAL_CONFIG_STAGE before running.
 # See: https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents-evaluations
-
-# --- Dataset Definition ---
-# Creates a dataset object from your evaluation table.
-# IMPORTANT: Remove this entire 'dataset' block after the first successful run
-# to avoid "dataset already exists" errors on subsequent runs.
-dataset:
-  dataset_type: "CORTEX AGENT"
-  table_name: "DEMO_DB.CORTEX_AGENTS.EVAL_DATASET"
-  dataset_name: "SALES_AGENT_EVAL_DATASET"
-  column_mapping:
-    query_text: "INPUT_QUERY"
-    ground_truth: "GROUND_TRUTH"
 
 # --- Agent Configuration ---
 evaluation:
