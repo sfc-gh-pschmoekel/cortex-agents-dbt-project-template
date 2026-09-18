@@ -1,0 +1,9 @@
+SELECT
+  LINE_ITEM_ID,
+  ORDER_ID,
+  PRODUCT_ID,
+  QUANTITY,
+  UNIT_PRICE,
+  DISCOUNT,
+  ROUND(QUANTITY * UNIT_PRICE * (1 - DISCOUNT), 2) AS LINE_TOTAL
+FROM {{ source('raw', 'order_items') }}

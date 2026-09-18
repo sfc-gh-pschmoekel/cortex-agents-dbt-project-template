@@ -2,16 +2,12 @@ version: 2
 
 sources:
   - name: raw
-    # TODO: Replace with your source database and schema
-    database: RAW_DB
-    schema: RAW_SCHEMA
+    database: DEMO_DB
+    schema: RAW_DATA
     tables:
-      # TODO: Add your source tables below. Example:
-      # - name: orders
-      #   description: "Customer orders with fulfillment status"
-      # - name: products
-      #   description: "Product catalog"
-      # - name: inventory_snapshots
-      #   description: "Daily inventory position snapshots"
-      - name: placeholder_table
-        description: "TODO: Replace with your first source table"
+      - name: orders
+        description: "Customer orders with status and channel info"
+      - name: products
+        description: "Product catalog with categories and pricing"
+      - name: order_items
+        description: "Line items linking orders to products"

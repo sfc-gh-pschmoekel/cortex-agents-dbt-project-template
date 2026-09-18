@@ -1,0 +1,9 @@
+SELECT
+  ORDER_ID,
+  CUSTOMER_ID,
+  ORDER_DATE,
+  ORDER_TOTAL,
+  STATUS,
+  CHANNEL,
+  REGION
+FROM {{ source('raw', 'orders') }}

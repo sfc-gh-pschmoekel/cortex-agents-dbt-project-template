@@ -2,4 +2,6 @@ version: 2
 
 models:
   - name: sv_example
-    description: "TODO: Describe your semantic view: what business domain does it cover?"
+    description: "Template semantic view skeleton -- not deployed in this demo"
+  - name: sv_sales
+    description: "Sales analytics semantic view covering orders, products, and line items for revenue, volume, and channel/region analysis"
