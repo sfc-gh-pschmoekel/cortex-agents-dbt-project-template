@@ -1,13 +1,13 @@
 {#
-  Agent spec + deploy wrapper for "sales_agent".
+  Agent spec + deploy wrapper for "sales_analytics_agent".
 
-  Deploy (create or replace):   dbt run-operation deploy_sales_agent
-  Zero-downtime live update:    dbt run-operation deploy_sales_agent --args '{alter: true}'
+  Deploy (create or replace):   dbt run-operation deploy_sales_analytics_agent
+  Zero-downtime live update:    dbt run-operation deploy_sales_analytics_agent --args '{alter: true}'
 
   The <<DATABASE>>, <<SCHEMA>>, and <<WAREHOUSE>> tokens are substituted with
   the active environment's target values by create_agent / alter_agent.
 #}
-{% macro deploy_sales_agent(alter=false) %}
+{% macro deploy_sales_analytics_agent(alter=false) %}
 {%- set spec -%}
 models:
   orchestration: auto
@@ -55,8 +55,8 @@ tool_resources:
 {%- endset -%}
 
   {% if alter %}
-    {{ alter_agent('sales_agent', spec) }}
+    {{ alter_agent('sales_analytics_agent', spec) }}
   {% else %}
-    {{ create_agent('sales_agent', spec) }}
+    {{ create_agent('sales_analytics_agent', spec) }}
   {% endif %}
 {% endmacro %}
